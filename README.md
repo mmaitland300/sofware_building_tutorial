@@ -1,4 +1,4 @@
-# sofware_building_tutorial
+
 # Building Your First Graphical File Manager in Python
 
 Welcome to your first project in building “real” software! In this guide, you’ll create a desktop application using Python and Tkinter. This project will not only help you practice basic programming skills but also introduce you to how your code interacts with the operating system (Linux Mint) to manage files.
