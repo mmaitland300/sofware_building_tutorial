@@ -26,10 +26,10 @@ Software is a set of instructions telling the computer what to do. Think of it a
 
 ### How Software Interacts with the Operating System (OS)  
 The operating system (Linux Mint in our case) manages the computer’s resources (CPU, memory, disk drives). Instead of speaking directly to the hardware, your Python program sends requests (or “orders”) to the OS via system calls.  
-**Analogy:** Imagine you are at a restaurant. You (the user/program) order food via a waiter (the OS); you do not go into the kitchen (hardware) to cook the food yourself.
+**Analogy:** Imagine you are at a restaurant. You (the user/program) order food via a waiter (the OS); you usually dont go into the kitchen (hardware) to cook the food yourself.
 
 ### Why Python?  
-Python is a great beginner-friendly language because:
+Python is a great language because:
 - **Readability:** Its syntax is clear and easy to understand.
 - **Community:** There is a large community and many learning resources.
 - **Libraries:** Python comes with powerful libraries like Tkinter for building GUIs.
@@ -52,7 +52,7 @@ A Graphical User Interface (GUI) allows users to interact with your software vis
    ```bash
    sudo apt update && sudo apt install python3
    ```  
-   *Note:* The `sudo` command gives you temporary administrator privileges (think of it as using a special key to open a locked door).
+   *Note:* The `sudo` command gives you temporary administrator privileges (like a special key to open a locked door).
 
 ### Step 2: Installing Visual Studio Code (VS Code)
 1. **What is VS Code?**  
