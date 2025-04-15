@@ -1,6 +1,6 @@
 # **Building A Graphical File Manager in Python**
 
-Welcome to building software from scratch guide\! In this guide, you’ll create a desktop application using Python and Tkinter. This project will not only help you practice basic programming skills but also introduce you to how your code interacts with the operating system (Linux Mint) to manage files.
+Welcome to your own building software from scratch guide\! In this guide, you’ll create a desktop application using Python and Tkinter. This project will not only help you practice basic programming skills but also introduce you to how your code interacts with the operating system (Linux Mint) to manage files.
 
 ## **1\. Introduction: What Are We Building and Why?**
 
