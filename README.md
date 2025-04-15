@@ -1,4 +1,8 @@
-## 1. Introduction: What Are We Building and Why?
+# **Building A Graphical File Manager in Python**
+
+Welcome to building software from scratch guide\! In this guide, you’ll create a desktop application using Python and Tkinter. This project will not only help you practice basic programming skills but also introduce you to how your code interacts with the operating system (Linux Mint) to manage files.
+
+## **1\. Introduction: What Are We Building and Why?**
 
 ### Project Goal  
 We are building a **desktop file management application** using Python and Tkinter that enables users to create, view/edit, and delete text files. This project serves as a hands-on exercise in coding and user interface design while acting as a gateway to understanding how high-level applications interact with the computer’s underlying system.
