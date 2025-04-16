@@ -348,7 +348,7 @@ class FileManagerApp:
         self.root = root
         self.current_file = None  # Instance variable for tracking the current file
         self.root.title("File Manager")
-        self.root.geometry("600x400")  # Width x Height
+        self.root.geometry("650x450")  # Width x Height
         self.setup_ui()
 
 # Note: The main execution block is placed at the end of the file.
@@ -659,7 +659,7 @@ class FileManagerApp:
         self.root = root
         self.current_file = None  # Path to the currently loaded file (absolute)
         self.root.title("File Manager")
-        self.root.geometry("650x450")  # Slightly larger default size
+        self.root.geometry("650x450")
         self.setup_ui()
 
     def setup_ui(self):
