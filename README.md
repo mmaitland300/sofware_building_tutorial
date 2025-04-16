@@ -10,7 +10,7 @@ We are building a **desktop file management application** using Python and Tkint
 
 #### **Practical vs. Advanced Tools**
 
-Graphical User Interfaces (GUIs) offer immediate visual feedback and ease of use, making them accessible for beginners and non-technical users. In contrast, command-line tools provide:
+Graphical User Interfaces (GUIs) offer immediate visual feedback and ease of use. In contrast, command-line tools provide:
 
 * **Flexibility & Control:** More granular control suited for complex, repetitive, or automated tasks.  
 * **Resource Efficiency:** They generally consume fewer system resources, which can be advantageous in batch-processing scenarios.
