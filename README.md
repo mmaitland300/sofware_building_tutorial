@@ -831,7 +831,7 @@ As you run and interact with your application, consider the following points reg
   * **Tkinter's Single Thread:** As discussed in Section 5.2, long operations in callbacks block the UI. For more complex applications needing background tasks, managing threading or using `asyncio` with Tkinter becomes necessary but adds complexity.  
   * **Questions:** How would the design change to support binary files? When would switching to a different GUI framework (like PyQt with its signal/slot mechanism) be justified?
 
-## 9. Conclusion and Next Steps
+## 8. Conclusion and Next Steps
 
 ### Summary of Learning
 
