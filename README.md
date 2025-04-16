@@ -831,7 +831,7 @@ As you run and interact with your application, consider the following points reg
   * **Tkinter's Single Thread:** As discussed in Section 5.2, long operations in callbacks block the UI. For more complex applications needing background tasks, managing threading or using `asyncio` with Tkinter becomes necessary but adds complexity.  
   * **Questions:** How would the design change to support binary files? When would switching to a different GUI framework (like PyQt with its signal/slot mechanism) be justified?
 
-## 8. Conclusion and Next Steps
+## 9. Conclusion and Next Steps
 
 ### Summary of Learning
 
@@ -868,9 +868,9 @@ As you progress beyond this project, consider these areas:
 
 ### Final Thoughts
 
-Congratulations on completing this project! Building an application like this touches upon many fundamental aspects of software development. By reflecting on system interactions, performance trade-offs, security considerations, and potential extensions, you are developing the critical skills necessary for tackling more complex challenges.
+Congratulations on completing this project! Building even a relatively simple application like this touches upon many fundamental aspects of software development. By reflecting on system interactions, performance trade-offs, security considerations, and potential extensions, you are developing the critical thinking skills necessary for tackling more complex challenges.
 
-Keep questioning, experimenting, and refining your understanding. Let me know if you have any questions I can help with. Happy coding!
+Keep questioning, experimenting, and refining your understanding. Happy coding!
 
 
 
