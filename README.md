@@ -267,7 +267,7 @@ In this section, we focus on using Tkinter to create a graphical user interface 
 
 ### 5.1 Overview of Tkinter
 
-Tkinter is Python’s standard GUI library. Since it is bundled with Python, no additional installation is required. Its simplicity and ease of use make it an attractive option for beginners to develop desktop applications.
+Tkinter is Python’s standard GUI library. Since it is bundled with Python, no additional installation is required. Its simplicity and ease of use make it an attractive option for both beginners and professionals alike to develop desktop applications.
 
 **Core Concepts:**
 
