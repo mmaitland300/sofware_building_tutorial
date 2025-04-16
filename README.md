@@ -1,5 +1,5 @@
 
-# Building Your First Graphical File Manager in Python (Revised)
+# Building a Graphical File Manager in Python
 
 Welcome to your first project in building “real” software! In this guide, you’ll create a desktop application using Python and Tkinter that will allow you to create, view/edit, and delete text files. We’ll explain each concept step by step, provide practical code examples, and dive into how your program interacts with the operating system (Linux Mint). Let’s get started!
 
@@ -8,7 +8,7 @@ Welcome to your first project in building “real” software! In this guide, yo
 ## 1. Introduction: What Are We Building and Why?
 
 ### Project Goal  
-We are building a **simple desktop file management application** that will allow you to:
+We are building a **desktop file management application** that will allow you to:
 - **Create** new text files.
 - **View and edit** the contents of existing text files.
 - **Delete** text files.
