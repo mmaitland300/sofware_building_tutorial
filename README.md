@@ -367,41 +367,83 @@ In this step, we add UI elements (using instance variables rather than globals) 
 
 ```python
     def setup_ui(self):
-        """Set up the user interface components."""
-        # Top frame for file operation controls
+        """
+        Set up the user interface components.
+
+        This method builds the main user interface using Tkinter and the themed ttk widgets.
+        It organizes the layout into frames and positions widgets using two geometry managers:
+        pack (for overall frame placement) and grid (for precise widget positioning within frames).
+        """
+
+        # --- Top Frame for File Operation Controls ---
+        # Create a frame widget as a container for all file operation controls (labels, entries, buttons).
+        # 'self.root' is the main window, and the padding "10" adds space inside the frame for better visual separation.
         top_frame = ttk.Frame(self.root, padding="10")
+        # Pack the frame into the main window.
+        # 'fill="x"' causes the frame to expand horizontally, taking up the available width.
         top_frame.pack(fill='x')
 
-        # Label and entry for filename input
+        # --- Filename Label and Entry ---
+        # Create a label widget inside the top_frame that displays the text "Filename:".
+        # This label tells the user that the adjacent input field is for typing the filename.
         filename_label = ttk.Label(top_frame, text="Filename:")
+        # Position the label using grid:
+        # Place it at row 0, column 0 in the grid layout with some horizontal (padx) and vertical (pady) padding.
+        # 'sticky="W"' aligns the label to the west (left side) of its grid cell.
         filename_label.grid(row=0, column=0, padx=5, pady=5, sticky='W')
 
+        # Create an entry widget where the user can input or edit the filename.
+        # The 'width=40' sets a moderate width for the input field.
         self.filename_entry = ttk.Entry(top_frame, width=40)
+        # Position the entry widget in the grid next to the label (row 0, column 1) with similar padding.
         self.filename_entry.grid(row=0, column=1, padx=5, pady=5, sticky='W')
 
-        # Create buttons for file operations, linking commands to instance methods
+        # --- Buttons for File Operations ---
+        # Create a "Create" button that, when clicked, calls the create_file() method.
         create_button = ttk.Button(top_frame, text="Create", command=self.create_file)
+        # Position the button in the grid at row 0, column 2.
         create_button.grid(row=0, column=2, padx=5, pady=5)
 
+        # Create a "Delete" button linked to the delete_file() method.
         delete_button = ttk.Button(top_frame, text="Delete", command=self.delete_file)
+        # Place the button at row 0, column 3.
         delete_button.grid(row=0, column=3, padx=5, pady=5)
 
+        # Create an "Open/Load" button that triggers the load_file() method.
         open_button = ttk.Button(top_frame, text="Open/Load", command=self.load_file)
+        # Set its grid position at row 0, column 4.
         open_button.grid(row=0, column=4, padx=5, pady=5)
 
+        # Create a "Save" button to invoke the save_file() method.
         save_button = ttk.Button(top_frame, text="Save", command=self.save_file)
+        # Place it at row 0, column 5.
         save_button.grid(row=0, column=5, padx=5, pady=5)
 
-        # Frame for the text area with scrollbar for file content
+        # --- Frame for File Content Display ---
+        # Create another frame that will hold the text area and its scrollbar.
+        # This frame is intended for displaying file contents, and it uses padding for better spacing.
         text_frame = ttk.Frame(self.root, padding="10")
+        # Pack the text_frame to expand and fill both horizontally and vertically.
+        # 'expand=True' allows the frame to grow and take up available space.
+        # 'fill="both"' ensures it stretches in both x (horizontal) and y (vertical) directions.
         text_frame.pack(expand=True, fill='both')
 
-        self.content_text_area = tk.Text(text_frame, wrap='word', undo=True)  # Enable undo
+        # Create a multi-line text widget inside text_frame.
+        # The text widget allows for file contents to be displayed and edited.
+        # 'wrap="word"' makes the text wrap at word boundaries rather than breaking words apart.
+        # 'undo=True' enables the undo functionality, allowing users to revert changes.
+        self.content_text_area = tk.Text(text_frame, wrap='word', undo=True)
+        # Pack the text widget on the left side of text_frame and allow it to expand and fill available space.
         self.content_text_area.pack(side='left', expand=True, fill='both')
 
+        # Create a vertical scrollbar for the text widget.
+        # The scrollbar's command is linked to the text widget's yview method, synchronizing scrolling.
         scrollbar = ttk.Scrollbar(text_frame, orient='vertical', command=self.content_text_area.yview)
+        # Position the scrollbar to the right side of text_frame and have it fill the vertical space.
         scrollbar.pack(side='right', fill='y')
 
+        # Configure the text widget to update its vertical scroll command,
+        # so scrolling via the scrollbar remains in sync with the text content.
         self.content_text_area.config(yscrollcommand=scrollbar.set)
 ```
 
