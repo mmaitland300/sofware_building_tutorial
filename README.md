@@ -868,7 +868,7 @@ As you progress beyond this project, consider these areas:
 
 ### Final Thoughts
 
-Congratulations on completing this project! Building even a relatively simple application like this touches upon many fundamental aspects of software development. By reflecting on system interactions, performance trade-offs, security considerations, and potential extensions, you are developing the critical thinking skills necessary for tackling more complex challenges.
+Congratulations on completing this project! Building an application like this touches upon many fundamental aspects of software development. By reflecting on system interactions, performance trade-offs, security considerations, and potential extensions, you are developing the critical skills necessary for tackling more complex challenges.
 
 Keep questioning, experimenting, and refining your understanding. Happy coding!
 
