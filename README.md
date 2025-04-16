@@ -332,12 +332,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import os
 
-# Optionally, define a custom exception for file operations
-# Note: This is defined but not explicitly raised in the current example code.
-# Raising it in except blocks (e.g., raise FileOperationError(...) from e)
-# could provide more application-specific error context if needed.
+# For each function that performs file I/O (e.g., creating, deleting, loading, and saving files), we will wrap the low-level exceptions in a try/except block and raise a FileOperationError with a clear error message
+
 class FileOperationError(Exception):
-    """Custom exception class for file operations."""
+    """Custom exception class for file-related errors.
+    
+    This exception is used to wrap lower-level errors (like IOError or OSError)
+    and provide a more descriptive, application-specific message.
+    """
     pass
 
 class FileManagerApp:
@@ -415,38 +417,46 @@ In this step, we define a method for creating files using proper error handling 
 
 ```python
     def create_file(self):
-        """Create a new text file using the filename from the entry widget."""
+        """
+        Create a new text file based on the filename provided in the entry widget.
+        
+        This function uses the 'x' mode to ensure that an existing file is not
+        overwritten and wraps low-level exceptions in FileOperationError for
+        better context.
+        """
         filename = self.filename_entry.get().strip()
         if not filename:
             messagebox.showerror("Error", "Please enter a filename.")
             return
 
-        # Basic check: Prevent creating files with path separators for simplicity
+        # Prevent path separators that might lead to unsafe paths
         if os.path.sep in filename:
             messagebox.showerror("Error", "Filename cannot contain path separators (/ or \\).")
             return
 
         try:
-            # Use absolute path based on current directory
             abs_filename = os.path.abspath(filename)
-            # Use 'x' mode for exclusive creation (safer)
+            # Open in 'x' mode to exclusively create a new file
             with open(abs_filename, 'x', encoding='utf-8') as f:
-                pass  # Just create the file, no initial content needed.
+                pass  # The file is created; no initial content is necessary.
             messagebox.showinfo("Success", f"File '{filename}' created successfully!")
-            # Update UI state after successful creation
+
+            # Update the UI: Clear text area and reset filename entry
             self.content_text_area.delete('1.0', tk.END)
             self.filename_entry.delete(0, tk.END)
             self.filename_entry.insert(0, filename)
-            self.current_file = abs_filename  # Store the full path
-            self.content_text_area.edit_reset()  # Reset undo stack
-            self.content_text_area.edit_modified(False)  # Mark as unmodified
+            self.current_file = abs_filename
+            self.content_text_area.edit_reset()   # Reset undo history
+            self.content_text_area.edit_modified(False)
 
-        except FileExistsError:
-            # Provide a more specific error if the file already exists
-            messagebox.showerror("Error", f"File '{os.path.abspath(filename)}' already exists.")
+        except FileExistsError as e:
+            # Raise the custom exception and handle it immediately by showing an error dialog.
+            error = FileOperationError(f"File '{abs_filename}' already exists.")
+            messagebox.showerror("Error", str(error))
         except (IOError, OSError) as e:
-            # Catch other potential errors (permissions, invalid name etc.)
-            messagebox.showerror("Error", f"Unable to create file '{filename}'.\nError: {e}")
+            error = FileOperationError(f"Unable to create file '{filename}'. Error: {e}")
+            messagebox.showerror("Error", str(error))
+
 ```
 
 *Explanation:*
@@ -459,39 +469,46 @@ Define a method for file deletion that includes user confirmation and proper err
 
 ```python
     def delete_file(self):
-        """Delete the specified file after user confirmation."""
+        """
+        Delete the specified file after confirming with the user.
+
+        This function constructs the absolute path of the file based on the current
+        UI state, then attempts to delete it. Low-level errors are wrapped in
+        FileOperationError to provide detailed context.
+        """
         filename = self.filename_entry.get().strip()
         if not filename:
             messagebox.showerror("Error", "Please enter the filename to delete.")
             return
 
-        # Determine the absolute path of the file to delete
+        # Determine the absolute path to delete.
         if self.current_file and os.path.basename(self.current_file) == filename:
             abs_target_file = self.current_file
         else:
             abs_target_file = os.path.abspath(filename)
 
-        # Ask for confirmation before deletion, showing the full path
         confirm = messagebox.askyesno("Confirm Delete",
                                       f"Are you sure you want to delete '{os.path.basename(abs_target_file)}'?\nFull path: {abs_target_file}")
         if confirm:
             try:
-                # os.remove() performs the deletion via a system call
                 os.remove(abs_target_file)
                 messagebox.showinfo("Success", f"File '{os.path.basename(abs_target_file)}' deleted successfully!")
-                # Clear UI elements after successful deletion
+                
+                # Clear the UI after deletion.
                 self.filename_entry.delete(0, tk.END)
                 self.content_text_area.delete('1.0', tk.END)
-                # Reset current_file state if the deleted file was the one loaded
                 if self.current_file == abs_target_file:
                     self.current_file = None
                 self.content_text_area.edit_reset()
                 self.content_text_area.edit_modified(False)
 
-            except FileNotFoundError:
-                messagebox.showerror("Error", f"File '{os.path.basename(abs_target_file)}' not found.")
+            except FileNotFoundError as e:
+                error = FileOperationError(f"File '{os.path.basename(abs_target_file)}' not found.")
+                messagebox.showerror("Error", str(error))
             except (IOError, OSError) as e:
-                messagebox.showerror("Error", f"Unable to delete file '{os.path.basename(abs_target_file)}'.\nError: {e}")
+                error = FileOperationError(f"Unable to delete file '{os.path.basename(abs_target_file)}'. Error: {e}")
+                messagebox.showerror("Error", str(error))
+
 ```
 
 *Explanation:*
@@ -504,73 +521,76 @@ Define methods to load a file’s content into the text area and to save modific
 
 ```python
     def load_file(self):
-        """Load a text file using a dialog and display its content."""
+        """
+        Load a file's content into the text area using a file dialog.
+
+        Opens the file in read mode and updates the UI with the file's contents.
+        Any issues encountered during loading are wrapped in FileOperationError.
+        """
         file_path = filedialog.askopenfilename(
             title="Select file to open",
             filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
         )
         if file_path:
             try:
-                # Ensure we store and use the absolute path
                 abs_file_path = os.path.abspath(file_path)
                 with open(abs_file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
 
-                # Update the text area
+                # Update the content in the text area and UI state.
                 self.content_text_area.delete('1.0', tk.END)
                 self.content_text_area.insert(tk.END, content)
-
-                # Update application state and UI
-                self.current_file = abs_file_path  # Store the full path
+                self.current_file = abs_file_path
                 self.filename_entry.delete(0, tk.END)
-                self.filename_entry.insert(0, os.path.basename(abs_file_path))  # Show only filename
+                self.filename_entry.insert(0, os.path.basename(abs_file_path))
 
                 messagebox.showinfo("File Loaded", f"File '{os.path.basename(abs_file_path)}' loaded successfully!")
-                self.content_text_area.edit_reset()  # Reset undo stack for the new file
-                self.content_text_area.edit_modified(False)  # Mark as unmodified initially
+                self.content_text_area.edit_reset()
+                self.content_text_area.edit_modified(False)
 
             except (IOError, OSError) as e:
-                messagebox.showerror("Error", f"Unable to load file.\nError: {e}")
-                # Reset state on error
+                error = FileOperationError(f"Unable to load file '{os.path.basename(file_path)}'. Error: {e}")
+                messagebox.showerror("Error", str(error))
+                # Reset state in case of error.
                 self.current_file = None
                 self.filename_entry.delete(0, tk.END)
                 self.content_text_area.delete('1.0', tk.END)
 
     def save_file(self):
-        """Save the content of the text area to the current file or prompt for Save As."""
-        # Get content, removing trailing newline often added by Text widget
-        content = self.content_text_area.get('1.0', tk.END).rstrip()
+        """
+        Save the content of the text area to the current file or via a Save As dialog.
 
+        This function checks if there is an existing file loaded and either saves
+        directly or prompts the user for a location and filename. Any errors are
+        wrapped in FileOperationError.
+        """
+        content = self.content_text_area.get('1.0', tk.END).rstrip()
         file_path_to_save = self.current_file
 
         if not file_path_to_save:
-            # If no file is currently loaded, trigger "Save As" dialog
             file_path_to_save = filedialog.asksaveasfilename(
                 title="Save file as",
                 defaultextension=".txt",
-                initialfile=self.filename_entry.get().strip() or "Untitled.txt",  # Suggest filename
+                initialfile=self.filename_entry.get().strip() or "Untitled.txt",
                 filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
             )
             if not file_path_to_save:
-                return  # User cancelled the dialog
-
-            # Update state after successful Save As - ensure absolute path
+                return  # User cancelled the Save As dialog.
             self.current_file = os.path.abspath(file_path_to_save)
             self.filename_entry.delete(0, tk.END)
             self.filename_entry.insert(0, os.path.basename(self.current_file))
         else:
-            # Ensure current_file path is absolute if loaded previously
             self.current_file = os.path.abspath(self.current_file)
 
-        # Proceed with saving to the determined absolute path
         try:
             with open(self.current_file, 'w', encoding='utf-8') as f:
                 f.write(content)
             messagebox.showinfo("Success", f"File '{os.path.basename(self.current_file)}' saved successfully!")
-            self.content_text_area.edit_modified(False)  # Mark content as saved
-
+            self.content_text_area.edit_modified(False)
         except (IOError, OSError) as e:
-            messagebox.showerror("Error", f"Unable to save file.\nError: {e}")
+            error = FileOperationError(f"Unable to save file '{os.path.basename(self.current_file)}'. Error: {e}")
+            messagebox.showerror("Error", str(error))
+
 ```
 
 *Explanation:*
@@ -587,7 +607,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import os
 
-# Optional custom exception for file-related errors
 class FileOperationError(Exception):
     """Custom exception class for file operations."""
     pass
@@ -647,38 +666,60 @@ class FileManagerApp:
 
     # --- File Operation Methods ---
     def create_file(self):
-        """Create a new file based on the filename provided."""
+        """
+        Create a new text file based on the filename provided in the entry widget.
+        
+        This function uses the 'x' mode to ensure that an existing file is not
+        overwritten and wraps low-level exceptions in FileOperationError for
+        better context.
+        """
         filename = self.filename_entry.get().strip()
         if not filename:
             messagebox.showerror("Error", "Please enter a filename.")
             return
+
+        # Prevent path separators that might lead to unsafe paths
         if os.path.sep in filename:
             messagebox.showerror("Error", "Filename cannot contain path separators (/ or \\).")
             return
 
         try:
             abs_filename = os.path.abspath(filename)
+            # Open in 'x' mode to exclusively create a new file
             with open(abs_filename, 'x', encoding='utf-8') as f:
-                pass
+                pass  # The file is created; no initial content is necessary.
             messagebox.showinfo("Success", f"File '{filename}' created successfully!")
+
+            # Update the UI: Clear text area and reset filename entry
             self.content_text_area.delete('1.0', tk.END)
             self.filename_entry.delete(0, tk.END)
             self.filename_entry.insert(0, filename)
             self.current_file = abs_filename
-            self.content_text_area.edit_reset()
+            self.content_text_area.edit_reset()   # Reset undo history
             self.content_text_area.edit_modified(False)
-        except FileExistsError:
-            messagebox.showerror("Error", f"File '{os.path.abspath(filename)}' already exists.")
+
+        except FileExistsError as e:
+            # Raise the custom exception and handle it immediately by showing an error dialog.
+            error = FileOperationError(f"File '{abs_filename}' already exists.")
+            messagebox.showerror("Error", str(error))
         except (IOError, OSError) as e:
-            messagebox.showerror("Error", f"Unable to create file '{filename}'.\nError: {e}")
+            error = FileOperationError(f"Unable to create file '{filename}'. Error: {e}")
+            messagebox.showerror("Error", str(error))
 
     def delete_file(self):
-        """Delete the specified file after user confirmation."""
+        """
+        Delete the specified file after confirming with the user.
+
+        This function constructs the absolute path of the file based on the current
+        UI state, then attempts to delete it. Low-level errors are wrapped in
+        FileOperationError to provide detailed context.
+        """
         filename = self.filename_entry.get().strip()
         if not filename:
             messagebox.showerror("Error", "Please enter the filename to delete.")
             return
 
+        # Determine the absolute path to delete.
         if self.current_file and os.path.basename(self.current_file) == filename:
             abs_target_file = self.current_file
         else:
@@ -690,19 +731,29 @@ class FileManagerApp:
             try:
                 os.remove(abs_target_file)
                 messagebox.showinfo("Success", f"File '{os.path.basename(abs_target_file)}' deleted successfully!")
+                
+                # Clear the UI after deletion.
                 self.filename_entry.delete(0, tk.END)
                 self.content_text_area.delete('1.0', tk.END)
                 if self.current_file == abs_target_file:
                     self.current_file = None
                 self.content_text_area.edit_reset()
                 self.content_text_area.edit_modified(False)
-            except FileNotFoundError:
-                messagebox.showerror("Error", f"File '{os.path.basename(abs_target_file)}' not found.")
+
+            except FileNotFoundError as e:
+                error = FileOperationError(f"File '{os.path.basename(abs_target_file)}' not found.")
+                messagebox.showerror("Error", str(error))
             except (IOError, OSError) as e:
-                messagebox.showerror("Error", f"Unable to delete file '{os.path.basename(abs_target_file)}'.\nError: {e}")
+                error = FileOperationError(f"Unable to delete file '{os.path.basename(abs_target_file)}'. Error: {e}")
+                messagebox.showerror("Error", str(error))
 
     def load_file(self):
-        """Load a file's content into the text area."""
+        """
+        Load a file's content into the text area using a file dialog.
+
+        Opens the file in read mode and updates the UI with the file's contents.
+        Any issues encountered during loading are wrapped in FileOperationError.
+        """
         file_path = filedialog.askopenfilename(
             title="Select file to open",
             filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
@@ -712,22 +763,34 @@ class FileManagerApp:
                 abs_file_path = os.path.abspath(file_path)
                 with open(abs_file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
+
+                # Update the content in the text area and UI state.
                 self.content_text_area.delete('1.0', tk.END)
                 self.content_text_area.insert(tk.END, content)
                 self.current_file = abs_file_path
                 self.filename_entry.delete(0, tk.END)
                 self.filename_entry.insert(0, os.path.basename(abs_file_path))
+
                 messagebox.showinfo("File Loaded", f"File '{os.path.basename(abs_file_path)}' loaded successfully!")
                 self.content_text_area.edit_reset()
                 self.content_text_area.edit_modified(False)
+
             except (IOError, OSError) as e:
-                messagebox.showerror("Error", f"Unable to load file.\nError: {e}")
+                error = FileOperationError(f"Unable to load file '{os.path.basename(file_path)}'. Error: {e}")
+                messagebox.showerror("Error", str(error))
+                # Reset state in case of error.
                 self.current_file = None
                 self.filename_entry.delete(0, tk.END)
                 self.content_text_area.delete('1.0', tk.END)
 
     def save_file(self):
-        """Save the content of the text area to the current file or prompt for Save As."""
+        """
+        Save the content of the text area to the current file or via a Save As dialog.
+
+        This function checks if there is an existing file loaded and either saves
+        directly or prompts the user for a location and filename. Any errors are
+        wrapped in FileOperationError.
+        """
         content = self.content_text_area.get('1.0', tk.END).rstrip()
         file_path_to_save = self.current_file
 
@@ -739,7 +802,7 @@ class FileManagerApp:
                 filetypes=(("Text Files", "*.txt"), ("All Files", "*.*"))
             )
             if not file_path_to_save:
-                return
+                return  # User cancelled the Save As dialog.
             self.current_file = os.path.abspath(file_path_to_save)
             self.filename_entry.delete(0, tk.END)
             self.filename_entry.insert(0, os.path.basename(self.current_file))
@@ -752,7 +815,8 @@ class FileManagerApp:
             messagebox.showinfo("Success", f"File '{os.path.basename(self.current_file)}' saved successfully!")
             self.content_text_area.edit_modified(False)
         except (IOError, OSError) as e:
-            messagebox.showerror("Error", f"Unable to save file.\nError: {e}")
+            error = FileOperationError(f"Unable to save file '{os.path.basename(self.current_file)}'. Error: {e}")
+            messagebox.showerror("Error", str(error))
 
 def main():
     """Sets up and runs the Tkinter application."""
@@ -766,7 +830,7 @@ if __name__ == '__main__':
 
 *Explanation:*
 
-- This complete code integrates all steps into a class-based design.
+- This complete code integrates all steps into a class-based design which follow best practces.
 - Specific error handling using `FileExistsError`, `FileNotFoundError`, `IOError`, and `OSError` is demonstrated.
 - The use of context managers (with statements) ensures proper file handling.
 
