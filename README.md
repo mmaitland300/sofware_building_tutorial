@@ -309,7 +309,7 @@ While Tkinter is a widely used and accessible choice for simple applications, it
 
 ### 5.4 Accessibility and Internationalization in UI Design
 
-When designing a user interface, especially for an educational tool, it is important to consider:
+When designing a user interface it is important to consider:
 
 * **Accessibility:**  
   * **Keyboard Navigation:** Ensure that your GUI is fully navigable via the keyboard, allowing users with motor impairments to use your application effectively (e.g., using Tab order).  
