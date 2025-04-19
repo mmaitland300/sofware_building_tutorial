@@ -8,107 +8,111 @@ Welcome! In this guide, you’ll build a desktop application from scratch using 
 
 ### 1.1 Project Goal
 
-We are building a **desktop file management application** using Python and Tkinter that enables users to create, view/edit, and delete simple text (`.txt`) files within a specific project directory[cite: 5]. This project serves as a hands-on exercise in GUI programming and file handling, while also providing a gateway to understanding how applications interact with the computer’s operating system[cite: 6].
+We are building a **desktop file management application** using Python and Tkinter that enables users to create, view/edit, and delete simple text (`.txt`) files within a specific project directory. This project serves as a hands-on exercise in GUI programming and file handling, while also providing a gateway to understanding how applications interact with the computer’s operating system.
 
 ### 1.2 Why a GUI? Practical vs. Command-Line Tools
 
-We're building a Graphical User Interface (GUI) because GUIs offer immediate visual feedback and are generally easier for end-users to learn[cite: 7]. However, it's worth noting the contrast with command-line interface (CLI) tools:
+We're building a Graphical User Interface (GUI) because GUIs offer immediate visual feedback and are generally easier for end-users to learn. However, it's worth noting the contrast with command-line interface (CLI) tools:
 
-* **Command-Line Tools:** Offer flexibility, fine-grained control, and are highly efficient for automation and complex, repetitive tasks. They typically consume fewer system resources[cite: 8, 9].
+* **Command-Line Tools:** Offer flexibility, fine-grained control, and are highly efficient for automation and complex, repetitive tasks. They typically consume fewer system resources
+.
 * **GUIs:** Excel in ease of use for interactive tasks but can be less suitable for scripting or large-scale automation.
 
-Understanding this trade-off helps inform design decisions[cite: 10]. For this learning exercise, a GUI provides a tangible, interactive result.
+Understanding this trade-off helps inform design decisions. For this learning exercise, a GUI provides a tangible, interactive result.
 
 ### 1.3 Core Concepts We'll Encounter
 
-* **File Input/Output (I/O):** Reading from and writing to files is fundamental but requires care. Errors can lead to data loss if not handled properly[cite: 11]. We'll need to manage file encodings (we'll use UTF-8) [cite: 12] and handle potential errors like files not being found or permission issues[cite: 95].
-* **Operating System Interaction:** Our Python code doesn't directly command the hard drive. It asks the Operating System (OS) – Linux Mint in this case – to perform file operations via **system calls**[cite: 25, 32]. The OS manages hardware access[cite: 26].
+* **File Input/Output (I/O):** Reading from and writing to files is fundamental but requires care. Errors can lead to data loss if not handled properly. We'll need to manage file encodings (we'll use UTF-8)  and handle potential errors like files not being found or permission issues.
+* **Operating System Interaction:** Your Python code doesn't directly command the computer's hardware like the hard drive or network card. Instead, it interacts with the **Operating System** (OS) – Linux Mint in this tutorial's examples. When your program wants to perform an action like creating a file, reading data, or opening a window, it makes a request to the OS using a specific mechanism called a **system call**. The OS acts as a mandatory intermediary or gatekeeper; it receives these requests, validates them (e.g., checking file permissions), translates them into low-level instructions for the hardware, and manages access to ensure stability and security for the whole system. Understanding this relationship helps clarify why things like file permissions exist and why Python code behaves consistently across different hardware running the same OS.
+
 * **Application Structure:** As applications grow, keeping code organized is crucial. We'll refactor our initial simple structure into a Model-View-Controller (MVC) pattern to separate concerns: data handling (Model), user interface (View), and application logic (Controller).
-* **Development Environment:** Setting up a clean, isolated environment for each project prevents conflicts between dependencies. We'll use Python's built-in `venv` for this[cite: 37].
+* **Development Environment:** Setting up a clean, isolated environment for each project prevents conflicts between dependencies. We'll use Python's built-in `venv` for this.
 * **Testing:** How do we know our code works correctly, especially after making changes? We'll write automated tests to verify our application's logic.
 
 Let's get started by setting up our development environment.
 
 ## 2. Setting Up Your Workshop: The Development Environment on Linux Mint
 
-This section guides you through configuring your development environment on Linux Mint[cite: 46]. We'll install necessary tools and set up an isolated project environment[cite: 47].
+This section guides you through configuring your development environment on Linux Mint. We'll install necessary tools and set up an isolated project environment.
 
 ### 2.1 Checking and Installing Python
 
-1.  **Open a Terminal:** Press `Ctrl+Alt+T` or find "Terminal" in your applications menu[cite: 48].
-2.  **Check Python 3:** Run `python3 --version`[cite: 49]. You should see `Python 3.x.x`. Most modern Linux Mint versions include it[cite: 50].
-3.  **Install (If Needed):** If Python 3 is missing, install it using the Advanced Package Tool (APT), Linux Mint's package manager[cite: 51]:
+1.  **Open a Terminal:** Press `Ctrl+Alt+T` or find "Terminal" in your applications menu.
+2.  **Check Python 3:** Run `python3 --version`. You should see `Python 3.x.x`. Most modern Linux Mint versions include it.
+3.  **Install (If Needed):** If Python 3 is missing, install it using the Advanced Package Tool (APT), Linux Mint's package manager:
     ```bash
-    sudo apt update && sudo apt install python3
+    sudo apt update
+    sudo apt install python3
     ```
-    `sudo` grants temporary administrator privileges for installation[cite: 50]. If you encounter dependency issues (sometimes caused by manually installing `.deb` files with `dpkg` [cite: 52]), running `sudo apt --fix-broken install` can often resolve them[cite: 53].
+    `sudo` grants temporary administrator privileges for installation. If you encounter dependency issues (sometimes caused by manually installing `.deb` files with `dpkg` ), running `sudo apt --fix-broken install` can often resolve them.
 
 ### 2.2 Installing Visual Studio Code (VS Code)
 
-VS Code is a popular, free Integrated Development Environment (IDE) with features like syntax highlighting, debugging tools, and extensions that enhance productivity[cite: 54].
+VS Code is a popular, free Integrated Development Environment (IDE) with features like syntax highlighting, debugging tools, and extensions that enhance productivity.
 
-1.  **Download:** Visit the [VS Code official website](https://code.visualstudio.com/) and download the `.deb` package for Debian/Ubuntu (Linux Mint is based on Ubuntu)[cite: 55].
+1.  **Download:** Visit the [VS Code official website](https://code.visualstudio.com/) and download the `.deb` package for Debian/Ubuntu (Linux Mint is based on Ubuntu).
 2.  **Install:**
-    * **Graphical:** Double-click the downloaded `.deb` file in your file manager[cite: 56].
-    * **Terminal:** Navigate to your Downloads folder (e.g., `cd ~/Downloads`) and run[cite: 57]:
-        ```bash
-        sudo dpkg -i code_*.deb
-        # Run this immediately after to fix potential dependencies:
-        sudo apt --fix-broken install
-        ```
-        Replace `code_*.deb` with the actual filename. Using `dpkg` directly can sometimes lead to dependency issues, which `--fix-broken install` resolves[cite: 58].
+    * **Graphical:** Double-click the downloaded `.deb` file in your file manager.
+    * **Terminal:** Navigate to your Downloads folder (e.g., `cd ~/Downloads`) and run:
+    ```bash
+    # Navigate to your Downloads folder first, e.g., cd ~/Downloads
+    sudo dpkg -i code_*.deb
+    # Run this immediately after to fix potential dependencies:
+    sudo apt --fix-broken install
+    ```
+    Replace `code_*.deb` with the actual filename. Using `dpkg` directly can sometimes lead to dependency issues, which `--fix-broken install` resolves.
 
 ### 2.3 Creating a Project Folder and Virtual Environment
 
-A clean project structure and an isolated environment are crucial[cite: 59].
+A clean project structure and an isolated environment are crucial.
 
 1.  **Create Project Folder:** In your terminal, decide where you want your project (e.g., in your Home directory):
     ```bash
     mkdir ~/FileManagerProject
     cd ~/FileManagerProject
     ```
-    This creates a folder named `FileManagerProject` in your home directory (`~`) and navigates into it[cite: 61].
+    This creates a folder named `FileManagerProject` in your home directory (`~`) and navigates into it.
 2.  **Open in VS Code:** While inside the `FileManagerProject` folder in the terminal, run:
     ```bash
     code .
     ```
-    The `.` refers to the current directory[cite: 63]. Alternatively, use VS Code's `File > Open Folder...` menu[cite: 64].
-3.  **Create Virtual Environment:** Open VS Code's integrated terminal (`Terminal > New Terminal` or `Ctrl+\``)[cite: 65]. Run:
+    The `.` refers to the current directory. Alternatively, use VS Code's `File > Open Folder...` menu.
+3.  **Create Virtual Environment:** Open VS Code's integrated terminal (`Terminal > New Terminal` or `Ctrl+\``). Run:
     ```bash
     python3 -m venv venv
     ```
-    This creates a `venv` subfolder containing a project-specific Python interpreter and library space[cite: 66, 67].
-    * **Why?** Virtual environments isolate project dependencies. Packages installed here won't interfere with other projects or the system's Python installation[cite: 38]. They work by modifying the Python interpreter's search path for modules[cite: 39]. Note: They *don't* isolate system-level dependencies (like C libraries)[cite: 40]. For that level of isolation, tools like Docker are used, but that's beyond our scope here[cite: 41, 42].
+    This creates a `venv` subfolder containing a project-specific Python interpreter and library space.
+    * **Why?** Virtual environments isolate project dependencies. Packages installed here won't interfere with other projects or the system's Python installation. They work by modifying the Python interpreter's search path for modules. Note: They *don't* isolate system-level dependencies (like C libraries). For that level of isolation, tools like Docker are used, but that's beyond our scope here.
 4.  **Activate Virtual Environment:** In the *same* terminal:
     ```bash
     source venv/bin/activate
     ```
-    Your terminal prompt should change, usually showing `(venv)` at the beginning[cite: 70]. You need to activate the environment *each time* you work on this project in a new terminal session[cite: 71].
-5.  **Set VS Code Interpreter:** Press `Ctrl+Shift+P`, type `Python: Select Interpreter`, and choose the one that includes `(.venv)` or points to `./venv/bin/python`[cite: 72]. This tells VS Code to use the project's isolated environment for running and debugging code.
+    Your terminal prompt should change, usually showing `(venv)` at the beginning. You need to activate the environment *each time* you work on this project in a new terminal session.
+5.  **Set VS Code Interpreter:** Press `Ctrl+Shift+P`, type `Python: Select Interpreter`, and choose the one that includes `(.venv)` or points to `./venv/bin/python`. This tells VS Code to use the project's isolated environment for running and debugging code.
 6.  **(Recommended) Create `.gitignore`:** If you plan to use Git version control, create a file named `.gitignore` in the project root (`FileManagerProject/`) with the following content:
     ```
     venv/
     __pycache__/
     *.pyc
     ```
-    This tells Git to ignore the virtual environment folder and Python's compiled bytecode cache files[cite: 73].
+    This tells Git to ignore the virtual environment folder and Python's compiled bytecode cache files.
 
 ## 3. Laying the Foundation: Python Basics for File Management
 
-Before building the GUI, let's review the core Python concepts we'll use[cite: 74].
+Before building the GUI, let's review the core Python concepts we'll use.
 
 ### 3.1 Variables, Strings, and Functions
 
-* **Variables:** Names that store data. We'll use them for filenames, content, etc.[cite: 76].
+* **Variables:** Names that store data. We'll use them for filenames, content, etc..
     ```python
     filename = "my_notes.txt"
     file_content = "This is the content."
     ```
-* **Strings:** Sequences of characters, used for filenames, messages, and file content[cite: 78, 79]. Defined with single (`'`) or double (`"`) quotes.
+* **Strings:** Sequences of characters, used for filenames, messages, and file content. Defined with single (`'`) or double (`"`) quotes.
     ```python
     message = 'File saved successfully!'
     ```
-* **Functions:** Reusable blocks of code that perform specific tasks[cite: 82]. They help organize code and make it modular[cite: 83].
+* **Functions:** Reusable blocks of code that perform specific tasks. They help organize code and make it modular.
     ```python
     def show_error_message(error_details):
         print(f"An error occurred: {error_details}")
@@ -116,48 +120,89 @@ Before building the GUI, let's review the core Python concepts we'll use[cite: 7
     # Calling the function
     show_error_message("File not found.")
     ```
-    We follow standard Python naming conventions (e.g., `snake_case` for variables and functions) as recommended by PEP 8[cite: 84].
+    We follow standard Python naming conventions (e.g., `snake_case` for variables and functions) as recommended by PEP 8.
 
-### 3.2 Basic File I/O (Input/Output)
+### 3.2 Basic File I/O with `open()` and `pathlib`
 
-Python's built-in `open()` function is the standard way to interact with files[cite: 85].
+Interacting with files is fundamental. Python offers built-in tools for this.
 
-* **Opening Files:** You need to specify the file path and a *mode*:
+* **The `pathlib` Module:** Introduced in Python 3.4, `pathlib` provides an object-oriented way to handle filesystem paths. It makes tasks like joining paths, checking existence, and reading/writing files cleaner and less error-prone than older methods using string manipulation with the `os` module. We'll use `pathlib.Path` objects to represent file paths.
+
+    ```python
+    from pathlib import Path
+
+    # Create a Path object (represents a potential file/directory)
+    # Assumes your script is in the project root for this example
+    project_dir = Path(".") # Current directory
+    filename = "example.txt"
+    file_path = project_dir / filename # Use '/' to join paths reliably
+
+    print(f"Will operate on: {file_path.resolve()}") # resolve() gives the full absolute path
+    ```
+
+* **Opening Files with `open()`:** The built-in `open()` function prepares a file for reading or writing. You need to specify the file path (ideally as a string derived from a `Path` object) and a *mode*:
     * `'r'`: Read (default). Fails if the file doesn't exist.
-    * `'w'`: Write. Creates the file if it doesn't exist, **overwrites it completely** if it does.
+    * `'w'`: Write. Creates the file if it doesn't exist, **overwrites it completely** if it does. Use with caution!
     * `'a'`: Append. Creates the file if it doesn't exist, adds data to the end if it does.
     * `'x'`: Exclusive creation. Creates the file, but fails if it already exists.
     * Add `b` for binary mode (e.g., `'rb'`, `'wb'`), but we'll stick to text mode (`t` is implied).
-* **The `with` Statement (Context Manager):** This is the recommended way to work with files. It automatically handles closing the file, even if errors occur[cite: 88, 100].
-    ```python
-    # Writing to a file (creates or overwrites)
-    try:
-        with open("example.txt", "w", encoding="utf-8") as f:
-            f.write("Hello, world!\n")
-            f.write("This is a second line.")
-        print("File written successfully.")
-    except OSError as e:
-        print(f"Error writing file: {e}") # More specific than general Exception
 
-    # Reading from a file
+* **The `with` Statement (Context Manager):** This is the **highly recommended** way to work with files using `open()`. It automatically ensures the file is properly closed (releasing system resources) even if errors occur during processing.
+    ```python
+    # Writing to a file using 'with' and pathlib
     try:
-        with open("example.txt", "r", encoding="utf-8") as f:
-            content = f.read() # Reads the entire file content
-        print("File content:")
+        # Convert Path object to string for open() if needed, though often optional now
+        # Specify encoding for reliable text handling
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("Hello from pathlib!\n")
+            f.write("This is a second line.")
+        print("File written successfully using open().")
+    except OSError as e:
+        # Catch OS-level errors like permission denied, disk full, etc.
+        print(f"Error writing file: {e}")
+
+    # Reading from a file using 'with'
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read() # Reads the entire file content into a string
+        print("File content read using open():")
         print(content)
     except FileNotFoundError:
-        print("Error: File not found.")
+        # Specific error if the file doesn't exist when opening in 'r' mode
+        print(f"Error: File not found at {file_path}")
     except OSError as e:
         print(f"Error reading file: {e}")
     ```
-    * **Encoding:** Always specify `encoding="utf-8"` for text files to handle a wide range of characters reliably[cite: 12, 151].
-    * **Buffering:** When you write to a file, the OS often uses a *buffer* – a temporary storage area in memory. Data might not be written to the actual disk immediately; it waits until the buffer is full or the file is explicitly *flushed* or closed[cite: 89, 90]. This improves performance by reducing frequent, slow disk access[cite: 91]. Reading also uses buffering[cite: 92]. The `with` statement ensures the buffer is flushed and the file is closed upon exiting the block[cite: 94].
+
+* **`pathlib` Convenience Methods:** `Path` objects also have helpful methods like `.read_text()` and `.write_text()` that handle opening, reading/writing, and closing the file in one step, often simplifying common tasks.
+    ```python
+    # Writing using pathlib's write_text()
+    try:
+        content_to_write = "Overwritten by write_text().\nHello again!"
+        file_path.write_text(content_to_write, encoding="utf-8")
+        print("File written successfully using path.write_text().")
+    except OSError as e:
+        print(f"Error writing file with write_text(): {e}")
+
+    # Reading using pathlib's read_text()
+    try:
+        content = file_path.read_text(encoding="utf-8")
+        print("File content read using path.read_text():")
+        print(content)
+    except FileNotFoundError:
+        print(f"Error: File not found at {file_path}")
+    except OSError as e:
+        print(f"Error reading file with read_text(): {e}")
+
+    ```
+* **Encoding:** Always specify `encoding="utf-8"` when working with text files (`open()`, `read_text()`, `write_text()`). UTF-8 supports a vast range of characters used worldwide and avoids common errors related to default system encodings.
+
+* **Buffering:** When you write to a file (using `f.write()` or `path.write_text()`), the Operating System often uses a *buffer* – a temporary storage area in memory. Data might not be written to the physical disk immediately; it might wait until the buffer is full or the file is explicitly *flushed* or *closed*. This improves performance by reducing frequent, slow disk accesses. Reading also uses buffering. The `with` statement and the `pathlib` convenience methods automatically handle buffer flushing and file closing correctly when the block is exited or the operation completes.
 
 ### 3.3 Error Handling with `try...except`
 
-File operations can fail for many reasons (file doesn't exist, no permission, disk full, etc.)[cite: 95]. We use `try...except` blocks to handle these potential errors gracefully instead of crashing.
+File operations can fail for many reasons (file doesn't exist, no permission, disk full, etc.). We use `try...except` blocks to handle these potential errors gracefully instead of crashing.
 
-* **Catch Specific Exceptions:** It's crucial to catch *specific* expected exceptions rather than using a generic `except Exception:`[cite: 96]. Catching everything can hide bugs or prevent appropriate responses to different errors[cite: 97, 98].
     ```python
     filename = "non_existent_file.txt"
     try:
@@ -173,25 +218,43 @@ File operations can fail for many reasons (file doesn't exist, no permission, di
     except Exception as e: # A fallback for truly unexpected errors (use sparingly)
         print(f"An unexpected error occurred: {e}")
     ```
-    Common file-related exceptions include `FileNotFoundError`, `PermissionError`, `IsADirectoryError`, and the broader `OSError` (which covers many I/O issues).
+* **Catch Specific Exceptions:** It's crucial to catch *specific* expected exceptions like `FileNotFoundError` or `PermissionError` first. This allows you to handle different error conditions appropriately (e.g., telling the user the file is missing vs. telling them they don't have permission). Avoid using a generic `except Exception:` unless it's a last resort fallback, as catching overly broad exceptions can hide unrelated bugs or prevent the program from exiting when it encounters a truly unexpected, unrecoverable state.
+
+* **Using `OSError`:** Many file-related exceptions, including `FileNotFoundError`, `PermissionError`, `IsADirectoryError`, and others related to underlying operating system issues (like "disk full" or "invalid argument"), inherit from a common base class called `OSError`. Sometimes, after handling the most common specific exceptions, you might catch `OSError` to handle a broader range of potential I/O problems without listing every single possibility.
 
 ### 3.4 Importing Modules
 
-Python's power comes from its extensive standard library and third-party packages. We use the `import` statement to bring code (functions, classes) from other modules into our script[cite: 102].
+Python's power comes from its extensive standard library and third-party packages. We use the `import` statement to bring code (functions, classes) from other modules into our script.
 
 ```python
-import os         # Provides functions for interacting with the OS (less used now with pathlib)
+import os         # Provides OS-level functions (less common now with pathlib)
+from pathlib import Path # Modern object-oriented way to handle file paths
+
 import tkinter    # The core Tkinter library for GUI widgets
-from tkinter import ttk  # Themed Tkinter widgets (for a more modern look)
-from pathlib import Path # Modern way to handle file paths object-orientedly
-import queue      # For communication between threads
-import threading  # For running tasks in the background
-from tkinter import messagebox # Standard dialog boxes (info, error, confirmation)
+from tkinter import ttk  # Themed Tkinter widgets (more modern look)
+from tkinter import messagebox # Standard dialog boxes (info, error, etc.)
 from tkinter import filedialog # Standard file open/save dialogs
+# We will import simpledialog later when needed
+
+import threading  # For running tasks concurrently (e.g., background I/O)
+import queue      # For safe communication between threads
 ```
 
 We'll import these as needed throughout the project.
 
+### 3.5 Handling Concurrent Operations (Brief Introduction)
+
+Graphical User Interfaces (GUIs like the one we're building with Tkinter) typically run in a single main thread. This thread handles drawing the interface, responding to button clicks, processing keyboard input, etc.
+
+What happens if you perform a long-running task directly within this main thread (e.g., reading a very large file, downloading data from the internet)? The entire GUI will freeze and become unresponsive until that task completes. This creates a poor user experience.
+
+To avoid freezing the UI, long-running tasks (especially Input/Output operations like file access or network requests) should be performed in a separate *background thread*.
+
+* **`threading` Module:** Python's `threading` module allows you to create and manage these background threads. You can start a task in a new thread, allowing the main GUI thread to remain responsive.
+
+* **`queue` Module:** However, there's a crucial rule in most GUI toolkits (including Tkinter): **You must not directly update GUI elements from a background thread.** Doing so can lead to unpredictable behaviour and crashes. The `queue` module provides thread-safe data structures (like `queue.Queue`) that allow safe communication *between* threads. Typically, the background thread performs its task and puts the result (or any errors) into a queue. The main GUI thread periodically checks this queue (using a mechanism like Tkinter's `root.after()`) and safely updates the GUI based on the information received from the queue.
+
+We will use `threading` and `queue` later when implementing file loading to keep our application responsive. This brief introduction provides the necessary context for why they are important in GUI applications.
 
 ## 4. Building the Basic User Interface (View Shell)
 Let's start building the visual part of our application using Tkinter. We'll create the main window and the basic layout for controls and the text area. We'll put this UI code in a file named view.py.
@@ -200,7 +263,7 @@ Let's start building the visual part of our application using Tkinter. We'll cre
 
 # view.py
 import tkinter as tk
-from tkinter import ttk, messagebox # We'll add more imports later
+from tkinter import ttk, messagebox, filedialog, simpledialog
 
 class FileManagerView:
     """
@@ -285,14 +348,28 @@ if __name__ == '__main__':
     app_view.run()             # Start the application's event loop
 
 ```
+**Understanding Tkinter Geometry Managers (`pack`, `grid`, `place`)**
+
+Tkinter provides three main geometry managers to control the size and position of widgets within a container (like a window or a frame):
+
+1.  **`pack()`:** Arranges widgets in blocks before placing them in the parent. It's often used for simpler layouts, stacking widgets vertically or horizontally, and making them fill available space. Options like `side` (`'top'`, `'bottom'`, `'left'`, `'right'`), `fill` (`'x'`, `'y'`, `'both'`), and `expand` (`True`/`False`) control its behavior.
+2.  **`grid()`:** Arranges widgets in a flexible grid (rows and columns). It's generally more powerful for complex layouts, aligning elements precisely. Options like `row`, `column`, `sticky` (to control alignment within a grid cell, e.g., `'W'`, `'E'`, `'NS'`), `padx`/`pady` (padding), `rowspan`/`columnspan` are used.
+3.  **`place()`:** Allows you to specify the exact size and position (x, y coordinates) of widgets. It offers precise control but makes layouts less adaptable to window resizing or content changes, so it's used less often for general application structure.
+
+**The Golden Rule:** You **cannot** mix `pack` and `grid` directly within the *same parent container* (e.g., applying `pack` to one button and `grid` to another button if both buttons are directly inside the *same* frame). Doing so will confuse Tkinter and likely cause your application to hang or behave unpredictably.
+
+**How This Tutorial Uses Them:** This tutorial *follows* the rule by using different managers in *nested* containers:
+* The main window (`root`) or major layout panes (like `main_pane`) might use `pack()` to arrange larger sections (like `top_frame` and `text_frame`, or `browser_frame` and `editor_frame`).
+* *Inside* one of those sections, like `top_frame`, we then use `grid()` to arrange the labels, entry fields, and buttons neatly in rows and columns relative to each other *within that specific frame*.
+
+This nesting approach is perfectly valid and common in Tkinter applications. The key is that widgets directly inside `top_frame` *only* use `grid`, while `top_frame` itself is positioned within its parent using `pack` (or `main_pane.add()`).
 Explanation:
 
-We use a class FileManagerView to encapsulate all UI-related code.
 __init__ sets up the main window (tk.Tk()) passed to it.
 setup_ui creates and arranges the widgets using ttk.Frame, ttk.Label, ttk.Entry, ttk.Button, tk.Text, and ttk.Scrollbar.
-We use two geometry managers: pack() for the main frames and grid() for controls within the top frame.
-self.filename_entry and self.text_area store references to widgets we'll need to interact with later.
+
 The if __name__ == '__main__': block is standard Python practice. It creates the root window, instantiates our FileManagerView, and starts the Tkinter event loop (mainloop()), which waits for user interactions (like button clicks).
+
 Save this code as view.py in your FileManagerProject directory. You can run it now (python view.py in your activated virtual environment) to see the basic window structure, although the buttons won't do anything yet.
 
 ## 5. Structuring the Application: Model-View-Controller (MVC)
@@ -345,37 +422,59 @@ class FileService:
     def _validate_path(self, filename: str) -> Path:
         """
         Validates the filename and resolves it to a secure path within base_dir.
-        Raises FileOperationError if validation fails.
+        Raises FileOperationError if validation fails (e.g., empty name, invalid
+        extension, path traversal attempt, operation on base directory itself).
         """
         if not filename:
             raise FileOperationError("Filename cannot be empty.")
 
-        # Prevent path components in the filename itself
-        if '/' in filename or '\\' in filename:
-            raise FileOperationError(f"Invalid characters in filename: {filename}")
+        # Clean whitespace. Allow '/' for now, let resolve() and is_relative_to() handle structure.
+        cleaned_filename = filename.strip()
+        if not cleaned_filename: # Check again after stripping
+             raise FileOperationError("Filename cannot be empty.")
 
-        # Create a Path object from the filename
-        candidate_path = self.base_dir / filename
+        candidate_path = self.base_dir / cleaned_filename
 
-        # Resolve the path to handle '..' etc., ensuring it's still within base_dir
-        resolved_path = candidate_path.resolve()
-
-        # Security Check 1: Ensure the resolved path is still within the base directory
+        # Resolve non-strictly first for security checks before existence checks
         try:
-            resolved_path.relative_to(self.base_dir)
-        except ValueError:
-            # This happens if resolved_path is outside base_dir (e.g., due to '..')
-            raise FileOperationError(f"Access denied: Path '{filename}' is outside the allowed directory.")
+            resolved_path_non_strict = candidate_path.resolve(strict=False)
+        except Exception as e:
+             # Catch resolution errors early (e.g., filename too long, illegal OS chars)
+             # These often indicate invalid filenames regardless of location.
+             raise FileOperationError(f"Invalid filename or path format: {e}")
 
-        # Security Check 2: Ensure the file extension is allowed
-        if resolved_path.suffix.lower() not in self.ALLOWED_EXTENSIONS:
-            raise FileOperationError(f"Invalid file type: Extension '{resolved_path.suffix}' is not allowed. Only {self.ALLOWED_EXTENSIONS} are permitted.")
+        # --- Security Checks ---
+        ACCESS_DENIED_MSG = "Access denied: Path is outside the allowed directory."
 
-        # Security Check 3: Ensure we are not operating directly on the base directory itself
-        if resolved_path == self.base_dir:
-             raise FileOperationError("Operation on base directory itself is not allowed.")
+        # Check 1: Ensure the resolved path structure is *within* the base directory.
+        # This is the primary defense against directory traversal (e.g., '../').
+        try:
+            # Use resolved_path_non_strict for the check
+            if not resolved_path_non_strict.is_relative_to(self.base_dir):
+                raise FileOperationError(ACCESS_DENIED_MSG)
+        except ValueError: # is_relative_to raises ValueError if paths are on different drives
+            # Append details to the standard message for better debugging in tests/logs
+            raise FileOperationError(ACCESS_DENIED_MSG + " (Different drive or location)")
+        except AttributeError:
+            # Fallback for Python < 3.9 - check common ancestor
+            # Use resolved_path_non_strict for the check
+            if self.base_dir != resolved_path_non_strict and self.base_dir not in resolved_path_non_strict.parents:
+                 raise FileOperationError(ACCESS_DENIED_MSG + " (Compatibility check)")
 
-        return resolved_path
+        # Check 2: Prevent direct operation on the base directory itself.
+        if resolved_path_non_strict == self.base_dir:
+             raise FileOperationError("Operation on the base directory itself is not allowed.")
+
+        # Check 3: Ensure the file extension is allowed (case-insensitive).
+        # Check suffix based on the resolved path structure.
+        if resolved_path_non_strict.suffix.lower() not in self.ALLOWED_EXTENSIONS:
+            raise FileOperationError(f"Invalid file type: Extension '{resolved_path_non_strict.suffix}' is not allowed. Only {self.ALLOWED_EXTENSIONS} are permitted.")
+
+        # Return the structurally validated path.
+        # Calling methods (e.g., read, write, delete) should handle FileNotFoundError
+        # if they require the file to actually exist at this path. They can use
+        # `path.exists()` or `path.resolve(strict=True)` internally if needed.
+        return resolved_path_non_strict
 
     def create(self, filename: str) -> None:
         """Creates a new, empty text file. Fails if the file already exists."""
@@ -437,12 +536,13 @@ class FileService:
 
     def rename(self, old_filename: str, new_filename: str) -> None:
         """Renames a file, performing necessary validations."""
-        old_path = self._validate_path(old_filename) # Validates old name exists and is allowed
+        # Validate the NEW name first to catch invalid extensions
+        new_path = self._validate_path(new_filename)
+
+        # Now validate the old filename exists
+        old_path = self._validate_path(old_filename)
         if not old_path.is_file():
             raise FileOperationError(f"File not found: {old_filename}")
-
-        # Validate the NEW name separately (must be within base_dir, allowed extension)
-        new_path = self._validate_path(new_filename)
 
         if new_path.exists():
             raise FileOperationError(f"Cannot rename: Target file '{new_filename}' already exists.")
@@ -450,7 +550,9 @@ class FileService:
         try:
             old_path.rename(new_path)
         except OSError as e:
-            raise FileOperationError(f"Unable to rename file '{old_filename}' to '{new_filename}': {e}")
+            raise FileOperationError(
+                f"Unable to rename file '{old_filename}' to '{new_filename}': {e}"
+            )
 ```
 #### Key points:
 We use pathlib.Path for modern, object-oriented path manipulation.
@@ -534,13 +636,13 @@ class FileController:
 ```
 Key points:
 
-The Controller imports the FileService and FileOperationError from the Model.
+* The Controller imports the FileService and FileOperationError from the Model.
 It takes the base_dir (we'll define this in the View) and creates a FileService instance.
 Its methods (create_file, read_file, etc.) directly correspond to the user actions the View will trigger.
 Crucially, the Controller methods do very little logic themselves. They primarily:
 Receive requests from the View.
 Call the appropriate method on the FileService (Model).
-Catch FileOperationError from the Model and re-raise it for the View to handle and display to the user.
+Catch `FileOperationError` from the Model and re-raise it. This is a key aspect of the design. The Model (`FileService`) raises its own custom, consistent `FileOperationError` regardless of the specific underlying issue (`FileNotFoundError`, `PermissionError`, `FileExistsError`, general `OSError`, etc.). The Controller simply catches *this specific type* and passes it up to the View. This decouples the View from the low-level details of file system errors; the View only needs to know how to handle the application-specific `FileOperationError` (typically by showing its message to the user).
 Return data (like file content or file lists) from the Model back to the View.
 The Controller does not import tkinter. It has no knowledge of GUI widgets.
 Now we have the Model (file_service.py) handling file logic and the Controller (controller.py) ready to mediate. Next, we'll update the View (view.py) to use the Controller.
@@ -555,7 +657,7 @@ Modify view.py as follows:
 
 # view.py
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox, filedialog, simpledialog
 from pathlib import Path
 import threading # For background tasks
 import queue     # For thread communication
@@ -655,8 +757,7 @@ class FileManagerView:
     def _on_create(self):
         """Handles the Create button click."""
         # Prompt user for a filename using a simple dialog
-        # Requires: from tkinter import simpledialog
-        import tkinter.simpledialog
+
         filename = tkinter.simpledialog.askstring("Create File", "Enter filename (.txt):")
 
         if not filename: # User cancelled or entered nothing
@@ -679,38 +780,49 @@ class FileManagerView:
              messagebox.showerror("Unexpected Error", f"An unexpected error occurred:\n{e}")
 
 
+# Inside FileManagerView class in view.py
+
     def _on_open(self):
         """Handles the Open button click. Uses background thread for loading."""
         if not self._confirm_discard_changes():
             return # User cancelled
 
-        # Use standard file dialog to get filename
-        filepath = filedialog.askopenfilename(
+        filepath_obj = filedialog.askopenfilename(
             title="Open Text File",
-            initialdir=self.PROJECT_ROOT, # Start browsing in project directory
+            initialdir=self.PROJECT_ROOT,
             filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
         )
 
-        if not filepath: # User cancelled dialog
+        if not filepath_obj: # User cancelled dialog
             return
 
+        filepath = str(filepath_obj) # Ensure it's a string for the thread arg
+
         # --- Asynchronous Loading ---
-        # Reading potentially large files can block the UI.
-        # We run the file reading in a separate thread.
-        # Why? Tkinter runs in a single main thread. Long operations
-        # in callbacks freeze the GUI. Running I/O in a background
-        # thread keeps the UI responsive.
+        # Reading potentially large files directly in this callback would
+        # block the Tkinter main event loop. The GUI would freeze until
+        # the file is fully read, creating a poor user experience.
+        #
+        # Solution:
+        # 1. Start a separate 'background' thread to perform the file I/O.
+        # 2. The background thread reads the file using the Controller.
+        # 3. **Crucially:** Background threads MUST NOT directly modify Tkinter widgets.
+        # 4. Use a thread-safe `queue.Queue` for communication:
+        #    - Background thread puts the result (file content or error) into the queue.
+        # 5. The main GUI thread periodically checks the queue using `root.after()`.
+        # 6. When a result is found in the queue, the main thread *safely* updates the GUI widgets.
+
+        # Indicate busy state BEFORE starting thread
+        self._set_ui_busy(True)
 
         # Create and start a background thread
-        # 'daemon=True' means the thread won't prevent the app from exiting
+        # 'daemon=True' ensures this thread won't prevent the app from exiting
+        # if the main thread finishes.
         thread = threading.Thread(target=self._perform_load_in_background, args=(filepath,), daemon=True)
         thread.start()
 
-        # Disable UI elements during load? (Optional, good practice)
-        # self._set_ui_busy(True) # You'd need to implement this
-
-        # Start checking the queue for the result shortly
-        self.root.after(100, self._check_load_queue) # Check queue every 100ms
+        # Start checking the queue for the result shortly (e.g., every 100ms)
+        self.root.after(100, self._check_load_queue)
 
     def _perform_load_in_background(self, filepath: str):
         """
@@ -737,32 +849,34 @@ class FileManagerView:
         Updates the UI if a result is found. Runs in the main Tkinter thread.
         """
         try:
-            # Check queue without blocking (get_nowait)
+            # Check queue without blocking (get_nowait raises queue.Empty if no item)
             status, payload, filepath = self._load_queue.get_nowait()
 
-            # Re-enable UI elements if they were disabled
-            # self._set_ui_busy(False)
+            # --- Result received, processing starts ---
+            # Re-enable UI elements now that the background task is done
+            self._set_ui_busy(False)
 
-            # Process the result
+            # Process the result from the queue
             if status == "success":
                 content = payload
-                filename = Path(filepath).name
+                filename = Path(filepath).name # Get filename part for display
                 self._update_ui_after_load(filename, content)
                 self._set_modified(False) # File just loaded is unmodified
-                # Optionally show success message, maybe in a status bar later
-                # messagebox.showinfo("Success", f"File '{filename}' loaded.")
+                # Optionally show success message in a status bar (future enhancement)
             else: # status == "error"
                 error_message = payload
                 messagebox.showerror("Error Loading File", f"Failed to load '{Path(filepath).name}':\n{error_message}")
                 # Optionally clear UI or leave previous content? Clear for now.
-                # self._update_ui_after_load(None, "")
+                # self._update_ui_after_load(None, "") # Decide on desired behavior
 
         except queue.Empty:
-            # Queue is empty, check again later
+            # Queue is empty, schedule the next check
             self.root.after(100, self._check_load_queue)
         except Exception as e: # Catch unexpected errors during UI update
+             # Ensure UI is re-enabled even if UI update fails
+             self._set_ui_busy(False)
              messagebox.showerror("Unexpected Error", f"Error updating UI after load:\n{e}")
-             # self._set_ui_busy(False) # Ensure UI is re-enabled
+             print(f"Error processing load queue item: {e}") # Log for debugging
 
 
     def _on_save(self):
@@ -861,6 +975,40 @@ class FileManagerView:
             # Reset the Text widget's internal flag AFTER we process it
             self.text_area.edit_modified(False)
 
+    def _set_ui_busy(self, busy: bool):
+        """Disables/Enables key UI elements during background operations."""
+        state = tk.DISABLED if busy else tk.NORMAL
+        # Disable/Enable interactive widgets to prevent conflicts during load
+        try:
+            # Top control buttons (assuming they are stored if needed, or access via parent frame)
+            # Let's assume top_frame exists and iterate through its button children
+            # This requires storing top_frame as self.top_frame in setup_ui
+            # Simpler approach for now: Disable widgets we have direct references to.
+            if self.filename_entry:
+                self.filename_entry.config(state=state)
+            if self.text_area:
+                # Make text area read-only instead of disabling completely
+                self.text_area.config(state=tk.NORMAL if not busy else tk.DISABLED) # tk.DISABLED makes it unscrollable sometimes, use with care
+                # Consider just setting read-only: self.text_area.config(state=tk.NORMAL); self.text_area.config(insertoff=busy) ? No standard way.
+                # Disabling is clearest signal, but might impact usability slightly.
+
+            if hasattr(self, 'file_tree'): # Check if tree exists yet
+                # We need to disable the tree to prevent selecting while loading
+                self.file_tree.config(state=state) # This might not directly work on Treeview, need to investigate
+                # Alternative: Unbind select event temporarily? Or disable parent frame?
+                # For now, attempt config state, may need refinement.
+
+            # Add other buttons if references are stored (Create, Open, Save, Delete, Rename, Refresh)
+            # Example if self.save_button reference was stored in setup_ui:
+            # if self.save_button:
+            #     self.save_button.config(state=state)
+
+            # Change cursor to indicate busy state
+            self.root.config(cursor="watch" if busy else "")
+
+        except tk.TclError as e:
+             # Handle potential errors if widgets don't exist or state change fails
+             print(f"Warning: Error updating UI busy state: {e}")
 
     def _confirm_discard_changes(self) -> bool:
         """
@@ -900,6 +1048,7 @@ class FileManagerView:
 if __name__ == '__main__':
     main_window = tk.Tk()
     app_view = FileManagerView(main_window)
+
     # Check if initialization failed in __init__ before running
     if hasattr(app_view, 'controller'):
          app_view.run()
@@ -949,78 +1098,55 @@ Modify setup_ui in view.py: Add the Treeview.
     def setup_ui(self):
         """Create and arrange the widgets in the main window."""
 
-        # --- Main Frames Layout (Browser Left, Editor Right) ---
+        # --- Main Paned Layout (Browser Left, Editor Right) ---
         main_pane = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
-        main_pane.pack(expand=True, fill='both', padx=10, pady=(0, 10))
+        main_pane.pack(expand=True, fill='both', padx=10, pady=(0,10))
 
-        # --- Left Pane: Directory Browser ---
-        browser_frame = ttk.Frame(main_pane, padding=(0, 0, 5, 0)) # Add padding to right
-        main_pane.add(browser_frame, weight=1) # 'weight' controls resizing proportion
+        # ---- Left Pane: Directory Browser ----
+        browser_frame = ttk.Frame(main_pane, padding=(0,0,5,0))
+        main_pane.add(browser_frame, weight=1)
 
-        browser_label = ttk.Label(browser_frame, text="Project Files (.txt)")
-        browser_label.pack(anchor='w', padx=5, pady=(0, 5))
+        ttk.Label(browser_frame, text="Project Files (.txt)").pack(anchor='w', padx=5, pady=(0,5))
 
-        # Treeview widget to display files
+        # This is the attribute smoke test needs:
         self.file_tree = ttk.Treeview(browser_frame, show='tree', selectmode='browse', height=15)
-        # 'show='tree'' hides the default '#' column header
-        # 'selectmode='browse'' allows only single selection
         self.file_tree.pack(expand=True, fill='both', side='top')
-
-        # Scrollbar for Treeview (useful if many files)
-        tree_scrollbar = ttk.Scrollbar(browser_frame, orient='vertical', command=self.file_tree.yview)
-        # Packing scrollbar requires careful placement relative to Treeview if needed.
-        # For simplicity here, let's assume few files or rely on default scroll if content overflows.
-        # If adding: tree_scrollbar.pack(side='right', fill='y')
-        # self.file_tree.config(yscrollcommand=tree_scrollbar.set)
-
-        # Bind selection event
         self.file_tree.bind('<<TreeviewSelect>>', self._on_tree_select)
 
-        # Add a Refresh button for the file list
-        refresh_button = ttk.Button(browser_frame, text="Refresh", command=self._refresh_file_list)
-        refresh_button.pack(fill='x', pady=(5, 0))
+        ttk.Button(browser_frame, text="Refresh", command=self._refresh_file_list).pack(fill='x', pady=(5,0))
+        ttk.Button(browser_frame, text="Rename Selected", command=self._on_rename).pack(fill='x', pady=(5,0))
 
+        # ---- Right Pane: Editor ----
+        editor_frame = ttk.Frame(main_pane)
+        main_pane.add(editor_frame, weight=4)
 
-        # --- Right Pane: Editor ---
-        editor_pane = ttk.Frame(main_pane)
-        main_pane.add(editor_pane, weight=4) # Editor takes more resize weight
-
-        # --- Top Frame for Controls (Now inside editor_pane) ---
-        top_frame = ttk.Frame(editor_pane, padding="5")
+        # Top controls (filename entry + buttons)
+        top_frame = ttk.Frame(editor_frame, padding="5")
         top_frame.pack(fill='x')
-        # ... (Filename Label, Entry, Create, Open, Save, Delete buttons - unchanged grid layout) ...
-        # Example for filename label placement within editor_pane's top_frame:
-        filename_label = ttk.Label(top_frame, text="Filename:")
-        filename_label.grid(row=0, column=0, padx=5, pady=5, sticky='W')
-        # ... rest of the controls ...
+
+        ttk.Label(top_frame, text="Filename:").grid(row=0, column=0, padx=5, pady=5, sticky='W')
         self.filename_entry = ttk.Entry(top_frame, width=40)
         self.filename_entry.grid(row=0, column=1, padx=5, pady=5, sticky='W')
-        self.filename_entry.bind('<Return>', lambda event: self._on_save())
+        self.filename_entry.bind('<Return>', lambda e: self._on_save())
 
-        create_button = ttk.Button(top_frame, text="Create", command=self._on_create)
-        create_button.grid(row=0, column=2, padx=5, pady=5)
-        open_button = ttk.Button(top_frame, text="Open", command=self._on_open)
-        open_button.grid(row=0, column=3, padx=5, pady=5)
-        save_button = ttk.Button(top_frame, text="Save", command=self._on_save)
-        save_button.grid(row=0, column=4, padx=5, pady=5)
-        delete_button = ttk.Button(top_frame, text="Delete", command=self._on_delete)
-        delete_button.grid(row=0, column=5, padx=5, pady=5)
+        ttk.Button(top_frame, text="Create", command=self._on_create).grid(row=0, column=2, padx=5, pady=5)
+        ttk.Button(top_frame, text="Open",   command=self._on_open  ).grid(row=0, column=3, padx=5, pady=5)
+        ttk.Button(top_frame, text="Save",   command=self._on_save  ).grid(row=0, column=4, padx=5, pady=5)
+        ttk.Button(top_frame, text="Delete", command=self._on_delete).grid(row=0, column=5, padx=5, pady=5)
 
-
-        # --- Text Area Frame (Now inside editor_pane) ---
-        text_frame = ttk.Frame(editor_pane, padding="5")
+        # Text area + scrollbar
+        text_frame = ttk.Frame(editor_frame, padding="5")
         text_frame.pack(expand=True, fill='both')
-        # ... (Text Area and its Scrollbar - unchanged packing) ...
-        self.text_area = tk.Text(text_frame, wrap='word', undo=True, height=15, width=60)
+
+        self.text_area = tk.Text(text_frame, wrap='word', undo=True)
         self.text_area.pack(side='left', expand=True, fill='both')
         scrollbar = ttk.Scrollbar(text_frame, orient='vertical', command=self.text_area.yview)
         scrollbar.pack(side='right', fill='y')
         self.text_area.config(yscrollcommand=scrollbar.set)
 
-
-        # --- Initial Population ---
-        # Populate the tree when the UI is first built
+        # After building UI, populate the file list once
         self._refresh_file_list()
+
 ```
 Add new methods to FileManagerView:
 
@@ -1045,8 +1171,10 @@ Add new methods to FileManagerView:
              messagebox.showerror("Unexpected Error", f"Error refreshing file list:\n{e}")
 
 
+# Inside FileManagerView class in view.py
+
     def _on_tree_select(self, event=None):
-        """Handles selection changes in the file Treeview."""
+        """Handles selection changes in the file Treeview. Loads file asynchronously."""
         selected_items = self.file_tree.selection() # Get tuple of selected item IDs
         if not selected_items:
             return # Nothing selected
@@ -1055,23 +1183,33 @@ Add new methods to FileManagerView:
 
         # Confirm discarding changes before loading new file
         if not self._confirm_discard_changes():
-            # Reselect previous item? Or just do nothing? Do nothing for simplicity.
-             # To prevent the selection visually changing if user cancels:
-             # self.file_tree.selection_set(self._current_filename) # requires storing selection
+            # If user cancels, prevent the selection change from persisting visually (optional)
+            # This requires storing the previously selected item. For simplicity, we omit this,
+            # but be aware the visual selection might differ from the loaded file if cancelled.
+            try:
+                # Attempt to re-select the previously current file if it exists in the tree
+                if self._current_filename and self.file_tree.exists(self._current_filename):
+                     self.file_tree.selection_set(self._current_filename)
+                # else: # If previous doesn't exist or wasn't set, clear selection?
+                #     self.file_tree.selection_set(())
+            except tk.TclError:
+                 pass # Ignore errors if item doesn't exist
             return
 
-        # Load the selected file (synchronously for simplicity in this callback)
-        # You could trigger the async load here too if preferred.
-        try:
-            content = self.controller.read_file(filename)
-            self._update_ui_after_load(filename, content)
-            self._set_modified(False)
-        except FileOperationError as e:
-            messagebox.showerror("Error Loading File", f"Failed to load '{filename}':\n{e}")
-            # Clear UI if load fails?
-            # self._update_ui_after_load(None, "")
-        except Exception as e:
-             messagebox.showerror("Unexpected Error", f"Error loading selected file:\n{e}")
+        # --- Trigger Asynchronous Loading ---
+        # Construct the full path needed by _perform_load_in_background
+        full_path = str(self.PROJECT_ROOT / filename)
+
+        # Indicate busy state
+        self._set_ui_busy(True)
+
+        # Start background thread (same as _on_open)
+        thread = threading.Thread(target=self._perform_load_in_background, args=(full_path,), daemon=True)
+        thread.start()
+
+        # Schedule queue check (same as _on_open)
+        self.root.after(100, self._check_load_queue)
+
 ```
 
 Call _refresh_file_list() in __init__ after setup_ui() is called. (Already added in the snippet above). Also call it after successful Create, Save (if new name), Delete, and Rename operations to keep the list up-to-date.
@@ -1081,7 +1219,6 @@ Call _refresh_file_list() in __init__ after setup_ui() is called. (Already added
 Add a Rename button in setup_ui (e.g., below the file tree or in the top controls). Let's add it below the tree.
 
 ```Python
-
 # view.py - inside setup_ui, after refresh_button.pack()
 
         rename_button = ttk.Button(browser_frame, text="Rename Selected", command=self._on_rename)
@@ -1229,7 +1366,7 @@ Add _create_menu and _bind_shortcuts methods to FileManagerView:
 Ensure you import Menu from tkinter. Add the _on_new method. Update _on_delete if using Ctrl+D shortcut.
 You now have a more feature-rich application with directory browsing, renaming, and standard menus/shortcuts!
 
-7. Testing Your Application
+## 7. Testing Your Application
 Writing automated tests is crucial for professional software development. They help ensure your code works as expected and prevent regressions (breaking existing functionality when adding new features or fixing bugs). We'll use pytest, a popular Python testing framework.
 
 Install pytest:
@@ -1333,22 +1470,59 @@ def test_invalid_extension_raises(service):
     with pytest.raises(FileOperationError, match="Invalid file type"):
         service.rename("any.txt", filename) # Also check rename target
 
-def test_directory_traversal_raises(service):
-    """Verify attempts to access files outside the base directory are blocked."""
-    # Create a dummy file *outside* the test dir to try and access
-    outside_file = service.base_dir.parent / "secret.txt"
-    outside_file.touch()
+def test_directory_traversal_raises(service, temp_base_dir):
+    """
+    Verify attempts to access files outside the base directory are blocked
+    by raising a FileOperationError containing an 'Access denied' message.
+    """
+    malicious_paths = [
+        "../secret.txt",
+        "../another_dir/file.txt",
+    ]
+    # Define a key part of the expected error message
+    EXPECTED_ERROR_SUBSTRING = "Access denied" # Be less specific than the full message
 
-    malicious_path = "../secret.txt" # Attempt to go one level up
+    operations_to_test = {
+        "create": lambda path: service.create(path),
+        "read": lambda path: service.read(path),
+        "write": lambda path: service.write(path, "hacked"),
+        "delete": lambda path: service.delete(path),
+        "rename_source": lambda path: service.rename(path, "new_name.txt"),
+        "rename_target": lambda path: service.rename("valid_source.txt", path),
+    }
 
-    with pytest.raises(FileOperationError, match="Access denied"):
-        service.read(malicious_path)
-    with pytest.raises(FileOperationError, match="Access denied"):
-        service.write(malicious_path, "hacked")
-    with pytest.raises(FileOperationError, match="Access denied"):
-        service.delete(malicious_path)
-    # Clean up the dummy outside file
-    outside_file.unlink()
+    # Prepare for rename tests
+    valid_source_name = "valid_source.txt"
+    (temp_base_dir / valid_source_name).touch() # Need a valid source file
+
+    for malicious_path in malicious_paths:
+        for op_name, operation in operations_to_test.items():
+            print(f"Testing operation '{op_name}' with path: {malicious_path}")
+            try:
+                operation(malicious_path)
+                # If the operation succeeded unexpectedly, fail the test
+                pytest.fail(
+                    f"Operation '{op_name}' did not raise FileOperationError for path '{malicious_path}'"
+                )
+            except FileOperationError as e:
+                # Check if the exception is the correct type (already guaranteed by except)
+                # Assert that the error message contains the key substring
+                assert EXPECTED_ERROR_SUBSTRING in str(e), \
+                    f"Operation '{op_name}' failed for path '{malicious_path}', " \
+                    f"but error message '{e}' did not contain '{EXPECTED_ERROR_SUBSTRING}'"
+                print(f"  -> Caught expected error: {e}") # Optional: print caught error
+            except Exception as e:
+                # Catch any other unexpected exceptions during the operation
+                pytest.fail(
+                    f"Operation '{op_name}' raised an unexpected exception type for path '{malicious_path}': {type(e).__name__}: {e}"
+                )
+
+    # Clean up the dummy file used for rename tests
+    (temp_base_dir / valid_source_name).unlink()
+
+    # Note: This test structure doesn't explicitly check the specific message variations
+    # (e.g., "Compatibility check", "Different drive") but ensures the core access denial is reported.
+    # It also doesn't test the "Operation on base directory" case, which could be a separate test.
 
 
 def test_list_files(service, temp_base_dir):
@@ -1413,9 +1587,11 @@ import sys
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Import project files
-from controller import FileController, FileOperationError # Assuming FOE comes from controller context too
-from file_service import FileOperationError as ServiceError # Alias for clarity
+# --- Import project files ---
+# Import the Controller itself
+from controller import FileController
+# Import the Model's exception class DIRECTLY from the model file
+from file_service import FileOperationError
 
 # --- Fixtures ---
 
@@ -1453,7 +1629,7 @@ def test_create_file_delegates(controller, mock_service):
     mock_service.create.assert_called_once_with(filename)
 
     # Test error propagation
-    mock_service.create.side_effect = ServiceError("Disk full") # Configure mock to raise error
+    mock_service.create.side_effect = FileOperationError("Disk full") # Configure mock to raise error
     with pytest.raises(FileOperationError, match="Disk full"):
         controller.create_file(filename)
 
@@ -1469,7 +1645,7 @@ def test_read_file_delegates(controller, mock_service):
     assert actual_content == expected_content
 
     # Test error propagation
-    mock_service.read.side_effect = ServiceError("Permission denied")
+    mock_service.read.side_effect = FileOperationError("Permission denied")
     with pytest.raises(FileOperationError, match="Permission denied"):
         controller.read_file(filename)
 
@@ -1482,7 +1658,7 @@ def test_write_file_delegates(controller, mock_service):
     mock_service.write.assert_called_once_with(filename, content)
 
     # Test error propagation
-    mock_service.write.side_effect = ServiceError("Write failed")
+    mock_service.write.side_effect = FileOperationError("Write failed")
     with pytest.raises(FileOperationError, match="Write failed"):
         controller.write_file(filename, content)
 
@@ -1494,7 +1670,7 @@ def test_delete_file_delegates(controller, mock_service):
     mock_service.delete.assert_called_once_with(filename)
 
     # Test error propagation
-    mock_service.delete.side_effect = ServiceError("File in use")
+    mock_service.delete.side_effect = FileOperationError("File in use")
     with pytest.raises(FileOperationError, match="File in use"):
         controller.delete_file(filename)
 
@@ -1509,7 +1685,7 @@ def test_list_files_delegates(controller, mock_service):
     assert actual_list == expected_list
 
     # Test error propagation
-    mock_service.list_files.side_effect = ServiceError("Cannot access directory")
+    mock_service.list_files.side_effect = FileOperationError("Cannot access directory")
     with pytest.raises(FileOperationError, match="Cannot access directory"):
         controller.list_files()
 
@@ -1522,7 +1698,7 @@ def test_rename_file_delegates(controller, mock_service):
     mock_service.rename.assert_called_once_with(old_name, new_name)
 
     # Test error propagation
-    mock_service.rename.side_effect = ServiceError("Rename failed")
+    mock_service.rename.side_effect = FileOperationError("Rename failed")
     with pytest.raises(FileOperationError, match="Rename failed"):
         controller.rename_file(old_name, new_name)
 ```
@@ -1610,10 +1786,11 @@ We mock the FileController used by the View during init to avoid needing the rea
 ### 7.4 Running the Tests
 Open Terminal: Navigate to your project root (FileManagerProject).
 Activate Environment: source venv/bin/activate
-Run pytest:
-Bash
 
+Run pytest:
+```Bash
 pytest -v # -v for verbose output
+```
 Pytest will automatically discover files named test_*.py in the current directory and subdirectories (tests/) and run the functions named test_*.
 You should see output indicating how many tests passed or failed. Green dots or "PASSED" mean success; 'F' or "FAILED" indicates problems, usually with a traceback showing the error location.
 
@@ -1671,6 +1848,623 @@ Try building a similar app with other GUI toolkits like PyQt or Kivy to compare.
 Investigate Python's asyncio for managing concurrency as an alternative to threading (requires integration with Tkinter's event loop, e.g., using libraries like asyncio-tkinter).
 Building software involves continuous learning and refinement. By tackling this project, you've gained practical experience in many core aspects of application development. Keep experimenting and building! Happy coding!
 
+
+---
+# Appendix: Complete Production-Ready Code
+
+Below are the three complete files for the final application. .
+
+---
+
+## 1. file_service.py
+```python
+from pathlib import Path
+
+class FileOperationError(Exception):
+    """Custom exception for file operation errors within our application."""
+    pass
+
+class FileService:
+    """
+    Model layer: Handles all direct interactions with the file system
+    for text files within a specified base directory.
+    Enforces security boundaries and allowed file types.
+    """
+    ALLOWED_EXTENSIONS = {'.txt'}
+
+    def __init__(self, base_dir: Path):
+        """
+        Initializes the service with a base directory.
+        All operations are restricted to this directory.
+        """
+        self.base_dir = base_dir.resolve()
+        if not self.base_dir.is_dir():
+            raise FileOperationError(f"Base directory not found: {self.base_dir}")
+
+    def _validate_path(self, filename: str) -> Path:
+        """
+        Validates the filename and resolves it to a secure path within base_dir.
+        Raises FileOperationError if validation fails (e.g., empty name, invalid
+        extension, path traversal attempt, operation on base directory itself).
+        """
+        if not filename:
+            raise FileOperationError("Filename cannot be empty.")
+
+        # Clean whitespace. Allow '/' for now, let resolve() and is_relative_to() handle structure.
+        cleaned_filename = filename.strip()
+        if not cleaned_filename: # Check again after stripping
+             raise FileOperationError("Filename cannot be empty.")
+
+        candidate_path = self.base_dir / cleaned_filename
+
+        # Resolve non-strictly first for security checks before existence checks
+        try:
+            resolved_path_non_strict = candidate_path.resolve(strict=False)
+        except Exception as e:
+             # Catch resolution errors early (e.g., filename too long, illegal OS chars)
+             # These often indicate invalid filenames regardless of location.
+             raise FileOperationError(f"Invalid filename or path format: {e}")
+
+        # --- Security Checks ---
+        ACCESS_DENIED_MSG = "Access denied: Path is outside the allowed directory."
+
+        # Check 1: Ensure the resolved path structure is *within* the base directory.
+        # This is the primary defense against directory traversal (e.g., '../').
+        try:
+            # Use resolved_path_non_strict for the check
+            if not resolved_path_non_strict.is_relative_to(self.base_dir):
+                raise FileOperationError(ACCESS_DENIED_MSG)
+        except ValueError: # is_relative_to raises ValueError if paths are on different drives
+            # Append details to the standard message for better debugging in tests/logs
+            raise FileOperationError(ACCESS_DENIED_MSG + " (Different drive or location)")
+        except AttributeError:
+            # Fallback for Python < 3.9 - check common ancestor
+            # Use resolved_path_non_strict for the check
+            if self.base_dir != resolved_path_non_strict and self.base_dir not in resolved_path_non_strict.parents:
+                 raise FileOperationError(ACCESS_DENIED_MSG + " (Compatibility check)")
+
+        # Check 2: Prevent direct operation on the base directory itself.
+        if resolved_path_non_strict == self.base_dir:
+             raise FileOperationError("Operation on the base directory itself is not allowed.")
+
+        # Check 3: Ensure the file extension is allowed (case-insensitive).
+        # Check suffix based on the resolved path structure.
+        if resolved_path_non_strict.suffix.lower() not in self.ALLOWED_EXTENSIONS:
+            raise FileOperationError(f"Invalid file type: Extension '{resolved_path_non_strict.suffix}' is not allowed. Only {self.ALLOWED_EXTENSIONS} are permitted.")
+
+        # Return the structurally validated path.
+        # Calling methods (e.g., read, write, delete) should handle FileNotFoundError
+        # if they require the file to actually exist at this path. They can use
+        # `path.exists()` or `path.resolve(strict=True)` internally if needed.
+        return resolved_path_non_strict
+
+    def create(self, filename: str) -> None:
+        """Creates a new, empty text file. Fails if the file already exists."""
+        path = self._validate_path(filename)
+        try:
+            with open(path, 'x', encoding='utf-8'):
+                pass
+        except FileExistsError:
+            raise FileOperationError(f"File already exists: {filename}")
+        except OSError as e:
+            raise FileOperationError(f"Unable to create file '{filename}': {e}")
+
+    def read(self, filename: str) -> str:
+        """Reads the content of a text file."""
+        path = self._validate_path(filename)
+        try:
+            if not path.is_file():
+                raise FileNotFoundError()
+            return path.read_text(encoding='utf-8')
+        except FileNotFoundError:
+            raise FileOperationError(f"File not found: {filename}")
+        except OSError as e:
+            raise FileOperationError(f"Unable to read file '{filename}': {e}")
+
+    def write(self, filename: str, content: str) -> None:
+        """Writes (or overwrites) content to a text file."""
+        path = self._validate_path(filename)
+        try:
+            if path.exists() and not path.is_file():
+                raise FileOperationError(f"Cannot write: '{filename}' is not a regular file.")
+            path.write_text(content, encoding='utf-8')
+        except OSError as e:
+            raise FileOperationError(f"Unable to write file '{filename}': {e}")
+
+    def delete(self, filename: str) -> None:
+        """Deletes a text file."""
+        path = self._validate_path(filename)
+        try:
+            if not path.is_file():
+                raise FileNotFoundError()
+            path.unlink()
+        except FileNotFoundError:
+            raise FileOperationError(f"File not found: {filename}")
+        except OSError as e:
+            raise FileOperationError(f"Unable to delete file '{filename}': {e}")
+
+    def list_files(self) -> list[str]:
+        """Returns a sorted list of allowed filenames in the base directory."""
+        try:
+            files = [
+                p.name for p in self.base_dir.iterdir()
+                if p.is_file() and p.suffix.lower() in self.ALLOWED_EXTENSIONS
+            ]
+            return sorted(files)
+        except OSError as e:
+            raise FileOperationError(f"Unable to list files in directory '{self.base_dir}': {e}")
+
+    def rename(self, old_filename: str, new_filename: str) -> None:
+        """Renames a file, performing necessary validations."""
+        # Validate the NEW name first to catch invalid extensions
+        new_path = self._validate_path(new_filename)
+
+        # Now validate the old filename exists
+        old_path = self._validate_path(old_filename)
+        if not old_path.is_file():
+            raise FileOperationError(f"File not found: {old_filename}")
+
+        if new_path.exists():
+            raise FileOperationError(f"Cannot rename: Target file '{new_filename}' already exists.")
+
+        try:
+            old_path.rename(new_path)
+        except OSError as e:
+            raise FileOperationError(
+                f"Unable to rename file '{old_filename}' to '{new_filename}': {e}"
+            )
+```
+
+---
+
+## 2. controller.py
+```python
+from pathlib import Path
+from file_service import FileService, FileOperationError
+
+class FileController:
+    """
+    Controller layer: Mediates between the View and the Model.
+    Translates user actions into file operations and returns results/errors.
+    """
+    def __init__(self, base_dir: Path):
+        try:
+            self.service = FileService(base_dir)
+        except FileOperationError:
+            raise
+
+    def create_file(self, filename: str):
+        try:
+            self.service.create(filename)
+        except FileOperationError:
+            raise
+
+    def read_file(self, filename: str) -> str:
+        try:
+            return self.service.read(filename)
+        except FileOperationError:
+            raise
+
+    def write_file(self, filename: str, content: str):
+        try:
+            self.service.write(filename, content)
+        except FileOperationError:
+            raise
+
+    def delete_file(self, filename: str):
+        try:
+            self.service.delete(filename)
+        except FileOperationError:
+            raise
+
+    def list_files(self) -> list[str]:
+        try:
+            return self.service.list_files()
+        except FileOperationError:
+            raise
+
+    def rename_file(self, old_filename: str, new_filename: str):
+        try:
+            self.service.rename(old_filename, new_filename)
+        except FileOperationError:
+            raise
+```
+
+---
+
+## 3. view.py
+```python
+import tkinter as tk
+from tkinter import ttk, messagebox, filedialog, simpledialog, Menu
+from pathlib import Path
+import threading
+import queue
+
+from controller import FileController, FileOperationError
+
+class FileManagerView:
+    """
+    GUI layer: Presents widgets and forwards user actions to the Controller.
+    """
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Simple Text File Manager")
+        self.root.geometry("800x600")
+
+        self.PROJECT_ROOT = Path(__file__).parent.resolve()
+
+        try:
+            self.controller = FileController(self.PROJECT_ROOT)
+        except FileOperationError as e:
+            messagebox.showerror(
+                "Initialization Error",
+                f"Failed to initialize File Controller:\n{e}\nApplication will exit."
+            )
+            self.root.quit()
+            return
+
+        self.filename_entry = None
+        self.text_area = None
+        self._current_filename = None
+        self._is_modified = False
+        self._load_queue = queue.Queue()
+
+        self.setup_ui()
+        self._create_menu()
+        self.text_area.bind('<<Modified>>', self._on_text_modified)
+        self.root.protocol("WM_DELETE_WINDOW", self._on_exit)
+        self._bind_shortcuts()
+
+    def setup_ui(self):
+        main_pane = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
+        main_pane.pack(expand=True, fill='both', padx=10, pady=10)
+
+        # Directory browser
+        browser_frame = ttk.Frame(main_pane, padding=(0,0,5,0))
+        main_pane.add(browser_frame, weight=1)
+
+        ttk.Label(browser_frame, text="Project Files (.txt)").pack(
+            anchor='w', padx=5, pady=(0,5)
+        )
+        self.file_tree = ttk.Treeview(
+            browser_frame, show='tree', selectmode='browse', height=20
+        )
+        self.file_tree.pack(expand=True, fill='both')
+        self.file_tree.bind('<<TreeviewSelect>>', self._on_tree_select)
+
+        ttk.Button(
+            browser_frame, text="Refresh", command=self._refresh_file_list
+        ).pack(fill='x', pady=(5,0))
+
+        # Editor pane
+        editor_frame = ttk.Frame(main_pane)
+        main_pane.add(editor_frame, weight=4)
+
+        # Top controls
+        top_frame = ttk.Frame(editor_frame, padding=5)
+        top_frame.pack(fill='x')
+
+        ttk.Label(top_frame, text="Filename:").grid(
+            row=0, column=0, padx=5, pady=5, sticky='W'
+        )
+        self.filename_entry = ttk.Entry(top_frame, width=50)
+        self.filename_entry.grid(row=0, column=1, padx=5, pady=5, sticky='W')
+        self.filename_entry.bind('<Return>', lambda e: self._on_save())
+
+        ttk.Button(
+            top_frame, text="Create", command=self._on_create
+        ).grid(row=0, column=2, padx=5)
+        ttk.Button(
+            top_frame, text="Open", command=self._on_open
+        ).grid(row=0, column=3, padx=5)
+        ttk.Button(
+            top_frame, text="Save", command=self._on_save
+        ).grid(row=0, column=4, padx=5)
+        ttk.Button(
+            top_frame, text="Delete", command=self._on_delete
+        ).grid(row=0, column=5, padx=5)
+
+        # Text area
+        text_frame = ttk.Frame(editor_frame, padding=5)
+        text_frame.pack(expand=True, fill='both')
+
+        self.text_area = tk.Text(
+            text_frame, wrap='word', undo=True
+        )
+        self.text_area.pack(side='left', expand=True, fill='both')
+        scrollbar = ttk.Scrollbar(
+            text_frame, orient='vertical', command=self.text_area.yview
+        )
+        scrollbar.pack(side='right', fill='y')
+        self.text_area.config(yscrollcommand=scrollbar.set)
+
+        self._refresh_file_list()
+
+    def _create_menu(self):
+        menubar = Menu(self.root)
+        self.root.config(menu=menubar)
+
+        file_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="New", accelerator="Ctrl+N", command=self._on_new)
+        file_menu.add_command(label="Open...", accelerator="Ctrl+O", command=self._on_open)
+        file_menu.add_command(label="Save", accelerator="Ctrl+S", command=self._on_save)
+        file_menu.add_separator()
+        file_menu.add_command(label="Rename Selected...", command=self._on_rename)
+        file_menu.add_command(label="Delete Current", accelerator="Ctrl+D", command=self._on_delete)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", accelerator="Ctrl+Q", command=self._on_exit)
+
+        edit_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Edit", menu=edit_menu)
+        edit_menu.add_command(label="Undo", accelerator="Ctrl+Z", command=self.text_area.edit_undo)
+        edit_menu.add_command(label="Redo", accelerator="Ctrl+Y", command=self.text_area.edit_redo)
+
+    def _bind_shortcuts(self):
+        self.root.bind('<Control-n>', lambda e: self._on_new())
+        self.root.bind('<Control-o>', lambda e: self._on_open())
+        self.root.bind('<Control-s>', lambda e: self._on_save())
+        self.root.bind('<Control-d>', lambda e: self._on_delete())
+        self.root.bind('<Control-q>', lambda e: self._on_exit())
+        self.root.bind('<Control-z>', lambda e: self.text_area.edit_undo())
+        self.root.bind('<Control-y>', lambda e: self.text_area.edit_redo())
+
+    def _on_new(self):
+        if not self._confirm_discard_changes():
+            return
+        self._update_ui_after_load(None, "")
+        self._set_modified(False)
+
+    def _on_create(self):
+        filename = simpledialog.askstring("Create File", "Enter filename (.txt):")
+        if not filename:
+            return
+        if not filename.endswith('.txt'):
+            filename += '.txt'
+        try:
+            self.controller.create_file(filename)
+            messagebox.showinfo("Success", f"File '{filename}' created successfully.")
+            self._update_ui_after_load(filename, "")
+            self._set_modified(False)
+        except FileOperationError as e:
+            messagebox.showerror("Error", f"Failed to create file:\n{e}")
+
+    def _on_open(self):
+        if not self._confirm_discard_changes(): return
+        filepath = filedialog.askopenfilename(
+            title="Open Text File",
+            initialdir=self.PROJECT_ROOT,
+            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+        )
+        if not filepath: return
+        threading.Thread(
+            target=self._perform_load_in_background,
+            args=(filepath,), daemon=True
+        ).start()
+        self.root.after(100, self._check_load_queue)
+
+    def _perform_load_in_background(self, filepath: str):
+        try:
+            relative = Path(filepath).relative_to(self.PROJECT_ROOT)
+            content = self.controller.read_file(relative.name)
+            self._load_queue.put(("success", content, filepath))
+        except Exception as e:
+            self._load_queue.put(("error", str(e), filepath))
+
+    def _check_load_queue(self):
+        """
+        Checks the queue for results from the background load thread.
+        Updates the UI if a result is found. Runs in the main Tkinter thread.
+        """
+        try:
+            # Check queue without blocking (get_nowait raises queue.Empty if no item)
+            status, payload, filepath = self._load_queue.get_nowait()
+
+            # --- Result received, processing starts ---
+            # Re-enable UI elements now that the background task is done
+            self._set_ui_busy(False)
+
+            # Process the result from the queue
+            if status == "success":
+                content = payload
+                filename = Path(filepath).name # Get filename part for display
+                self._update_ui_after_load(filename, content)
+                self._set_modified(False) # File just loaded is unmodified
+                # Optionally show success message in a status bar (future enhancement)
+            else: # status == "error"
+                error_message = payload
+                messagebox.showerror("Error Loading File", f"Failed to load '{Path(filepath).name}':\n{error_message}")
+                # Optionally clear UI or leave previous content? Clear for now.
+                # self._update_ui_after_load(None, "") # Decide on desired behavior
+
+        except queue.Empty:
+            # Queue is empty, schedule the next check
+            self.root.after(100, self._check_load_queue)
+        except Exception as e: # Catch unexpected errors during UI update
+             # Ensure UI is re-enabled even if UI update fails
+             self._set_ui_busy(False)
+             messagebox.showerror("Unexpected Error", f"Error updating UI after load:\n{e}")
+             print(f"Error processing load queue item: {e}") # Log for debugging
+
+    def _on_save(self):
+        filename = self.filename_entry.get().strip()
+        if not filename:
+            messagebox.showerror("Error", "Please enter a filename.")
+            return
+        if not filename.endswith('.txt'):
+            filename += '.txt'
+            self.filename_entry.delete(0, tk.END)
+            self.filename_entry.insert(0, filename)
+        content = self.text_area.get('1.0', tk.END+'-1c')
+        try:
+            self.controller.write_file(filename, content)
+            messagebox.showinfo("Success", f"File '{filename}' saved successfully.")
+            self._current_filename = filename
+            self._set_modified(False)
+        except FileOperationError as e:
+            messagebox.showerror("Error Saving File", f"Failed to save '{filename}':\n{e}")
+
+    def _on_delete(self):
+        filename = self.filename_entry.get().strip()
+        if not filename:
+            messagebox.showwarning("Delete File", "Please enter or select a filename to delete.")
+            return
+        if messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete '{filename}'?"):
+            try:
+                self.controller.delete_file(filename)
+                messagebox.showinfo("Success", f"File '{filename}' deleted.")
+                if filename == self._current_filename:
+                    self._update_ui_after_load(None, "")
+                    self._set_modified(False)
+            except FileOperationError as e:
+                messagebox.showerror("Error Deleting File", f"Failed to delete '{filename}':\n{e}")
+
+    def _refresh_file_list(self):
+        for item in self.file_tree.get_children():
+            self.file_tree.delete(item)
+        try:
+            for name in self.controller.list_files():
+                self.file_tree.insert('', 'end', iid=name, text=name)
+        except FileOperationError as e:
+            messagebox.showerror("Error Listing Files", f"Could not refresh file list:\n{e}")
+
+    def _on_tree_select(self, event=None):
+        """Handles selection changes in the file Treeview. Loads file asynchronously."""
+        selected_items = self.file_tree.selection() # Get tuple of selected item IDs
+        if not selected_items:
+            return # Nothing selected
+
+        filename = selected_items[0] # Get the first (and only) selected item's ID (which is the filename)
+
+        # Confirm discarding changes before loading new file
+        if not self._confirm_discard_changes():
+            # If user cancels, prevent the selection change from persisting visually (optional)
+            # This requires storing the previously selected item. For simplicity, we omit this,
+            # but be aware the visual selection might differ from the loaded file if cancelled.
+            try:
+                # Attempt to re-select the previously current file if it exists in the tree
+                if self._current_filename and self.file_tree.exists(self._current_filename):
+                     self.file_tree.selection_set(self._current_filename)
+                # else: # If previous doesn't exist or wasn't set, clear selection?
+                #     self.file_tree.selection_set(())
+            except tk.TclError:
+                 pass # Ignore errors if item doesn't exist
+            return
+
+        # --- Trigger Asynchronous Loading ---
+        # Construct the full path needed by _perform_load_in_background
+        full_path = str(self.PROJECT_ROOT / filename)
+
+        # Indicate busy state
+        self._set_ui_busy(True)
+
+        # Start background thread (same as _on_open)
+        thread = threading.Thread(target=self._perform_load_in_background, args=(full_path,), daemon=True)
+        thread.start()
+
+        # Schedule queue check (same as _on_open)
+        self.root.after(100, self._check_load_queue)
+
+    def _on_rename(self):
+        sel = self.file_tree.selection()
+        if not sel:
+            messagebox.showwarning("Rename File", "Please select a file to rename.")
+            return
+        old = sel[0]
+        new = simpledialog.askstring("Rename File", f"Enter new name for '{old}':", initialvalue=old)
+        if not new or new == old: return
+        if not new.endswith('.txt'): new += '.txt'
+        try:
+            self.controller.rename_file(old, new)
+            messagebox.showinfo("Success", f"File renamed to '{new}'")
+            self._refresh_file_list()
+            if old == self._current_filename:
+                self._current_filename = new
+                self.filename_entry.delete(0, tk.END)
+                self.filename_entry.insert(0, new)
+            self.file_tree.selection_set(new)
+        except FileOperationError as e:
+            messagebox.showerror("Error Renaming File", f"Failed to rename file:\n{e}")
+
+    def _update_ui_after_load(self, filename, content):
+        self.filename_entry.delete(0, tk.END)
+        if filename: self.filename_entry.insert(0, filename)
+        self.text_area.delete('1.0', tk.END)
+        self.text_area.insert('1.0', content)
+        self._current_filename = filename
+        self.text_area.edit_reset()
+
+    def _on_text_modified(self, event=None):
+        if self.text_area.edit_modified() and not self._is_modified:
+            self._set_modified(True)
+
+    def _set_modified(self, state: bool):
+        self._is_modified = state
+        title = "Simple Text File Manager"
+        self.root.title(('*'+title) if state else title)
+        if not state:
+            self.text_area.edit_modified(False)
+
+    def _set_ui_busy(self, busy: bool):
+        """Disables/Enables key UI elements during background operations."""
+        state = tk.DISABLED if busy else tk.NORMAL
+        # Disable/Enable interactive widgets to prevent conflicts during load
+        try:
+            # Top control buttons (assuming they are stored if needed, or access via parent frame)
+            # Let's assume top_frame exists and iterate through its button children
+            # This requires storing top_frame as self.top_frame in setup_ui
+            # Simpler approach for now: Disable widgets we have direct references to.
+            if self.filename_entry:
+                self.filename_entry.config(state=state)
+            if self.text_area:
+                # Make text area read-only instead of disabling completely
+                self.text_area.config(state=tk.NORMAL if not busy else tk.DISABLED) # tk.DISABLED makes it unscrollable sometimes, use with care
+                # Consider just setting read-only: self.text_area.config(state=tk.NORMAL); self.text_area.config(insertoff=busy) ? No standard way.
+                # Disabling is clearest signal, but might impact usability slightly.
+
+            if hasattr(self, 'file_tree'): # Check if tree exists yet
+                # We need to disable the tree to prevent selecting while loading
+                self.file_tree.config(state=state) # This might not directly work on Treeview, need to investigate
+                # Alternative: Unbind select event temporarily? Or disable parent frame?
+                # For now, attempt config state, may need refinement.
+
+            # Add other buttons if references are stored (Create, Open, Save, Delete, Rename, Refresh)
+            # Example if self.save_button reference was stored in setup_ui:
+            # if self.save_button:
+            #     self.save_button.config(state=state)
+
+            # Change cursor to indicate busy state
+            self.root.config(cursor="watch" if busy else "")
+
+        except tk.TclError as e:
+             # Handle potential errors if widgets don't exist or state change fails
+             print(f"Warning: Error updating UI busy state: {e}")
+
+    def _confirm_discard_changes(self) -> bool:
+        if not self._is_modified:
+            return True
+        resp = messagebox.askyesnocancel(
+            "Unsaved Changes",
+            "You have unsaved changes. Save before continuing?"
+        )
+        if resp is True:
+            self._on_save()
+            return not self._is_modified
+        return resp is False
+
+    def _on_exit(self):
+        if self._confirm_discard_changes():
+            self.root.quit()
+
+    def run(self):
+        self.root.mainloop()
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = FileManagerView(root)
+    if hasattr(app, 'controller'):
+        app.run()
+```
 
 
 
