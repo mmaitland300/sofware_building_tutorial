@@ -763,9 +763,10 @@ class FileManagerView:
         if not filename: # User cancelled or entered nothing
             return
 
-        # Basic check in View, though Controller/Service do robust validation
+        # Basic check in View; Controller/Service perform robust validation.
+        # Automatically append .txt if the user didn't provide it.
         if not filename.endswith('.txt'):
-             filename += '.txt' # Optionally append .txt if missing
+             filename += '.txt'
 
         try:
             # Delegate to the Controller
