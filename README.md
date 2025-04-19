@@ -33,7 +33,9 @@ Let's get started by setting up our development environment.
 
 ## 2. Setting Up Your Workshop: The Development Environment on Linux Mint
 
-This section guides you through configuring your development environment on Linux Mint. We'll install necessary tools and set up an isolated project environment.
+This section guides you through configuring your development environment specifically on **Linux Mint**, which uses the APT package manager. If you are using a different operating system (like Fedora, Arch Linux, macOS, or Windows), the general steps (installing Python 3, installing VS Code, creating a virtual environment) are similar, but the specific commands for installing software via the terminal will differ (e.g., using `dnf` on Fedora, `pacman` on Arch, `brew` on macOS, `winget` or `choco` on Windows, or downloading installers directly). Please refer to the documentation for your specific OS and its package manager(s).
+
+We'll install necessary tools and set up an isolated project environment.
 
 ### 2.1 Checking and Installing Python
 
@@ -889,16 +891,20 @@ class FileManagerView:
              # Or call _on_save_as() - requires separate implementation
              return
 
-        # Basic check, Controller/Service do robust validation
+        # Basic check; Controller/Service perform robust validation.
+        # Automatically append .txt if missing and update the entry field.
         if not filename.endswith('.txt'):
             filename += '.txt'
+            # Update the UI to reflect the appended extension
             self.filename_entry.delete(0, tk.END)
             self.filename_entry.insert(0, filename)
 
 
         # Get content from the text area
-        # '1.0' means line 1, character 0. tk.END means end of text.
-        # The '-1c' removes the trailing newline Text widget often adds.
+        # '1.0' means line 1, character 0. tk.END means the very end of the text.
+        # The Text widget often implicitly adds a newline character at the absolute
+        # end of its content, so '+ -1c' (plus negative one character) is used
+        # to retrieve the content *excluding* that potentially unwanted final newline.
         content = self.text_area.get('1.0', tk.END + '-1c')
 
         try:
@@ -1326,7 +1332,7 @@ Add _create_menu and _bind_shortcuts methods to FileManagerView:
         # Add Save As later if desired
         file_menu.add_separator()
         file_menu.add_command(label="Rename Selected...", command=self._on_rename) # No common shortcut
-        file_menu.add_command(label="Delete Current", accelerator="Ctrl+D", command=self._on_delete) # Use Ctrl+D? Or Del key?
+        file_menu.add_command(label="Delete Current", accelerator="Ctrl+D", command=self._on_delete)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", accelerator="Ctrl+Q", command=self._on_exit)
 
@@ -1571,10 +1577,10 @@ def test_rename_invalid_target_extension_raises(service, temp_base_dir):
     with pytest.raises(FileOperationError, match="Invalid file type"):
         service.rename("source.txt", "target.log")
 ```
-
+**Note on `sys.path`:** Modifying `sys.path` like this allows the test files inside the `tests/` directory to import modules from the main project directory (like `file_service.py`). While functional for simpler projects like this one, in larger applications, a more standard practice is often to structure the project as an installable package (using a `setup.py` or `pyproject.toml` file) and install it in the virtual environment in "editable" mode (`pip install -e .`). This makes imports work more reliably without manual path manipulation. For this tutorial, the `sys.path` approach is simpler to demonstrate.
 ## 7.2 Unit Tests for the Controller (tests/test_controller.py)
 
-These tests verify that the FileController correctly calls the appropriate FileService methods and propagates errors. We use mocking to replace the real FileService with a fake one (a "mock object") that records calls made to it. This isolates the Controller logic without needing a real file system.
+These tests verify that the FileController correctly calls the appropriate FileService methods and propagates errors. We use mocking to replace the real FileService with a fake one (a "mock object") that records calls made to it. This isolates the Controller logic without needing a real file system. **Why do this? Mocking allows us to test the Controller's interaction logic (Does it call the correct service method? Does it handle errors properly?) in complete isolation, ensuring the test focuses only on the Controller's code. We also use 'monkeypatching' (provided by pytest) to dynamically replace the part of the Controller's code that *creates* the FileService, forcing it to use our mock object instead. This gives us precise control over the dependencies during the test.**
 
 ```Python
 
@@ -1776,14 +1782,15 @@ def test_view_initialization(tk_root, dummy_base_dir, monkeypatch):
     except Exception as e:
         pytest.fail(f"FileManagerView initialization failed: {e}")
 ```
-
 Notes on Smoke Test:
+* GUI testing is complex. This smoke test is basic.
+* It requires a display environment (like your desktop).
+* On headless CI servers, you might need `xvfb` (X Virtual Framebuffer).
+* We skip the test if Tkinter fails to initialize (e.g., no display).
+* We monkeypatch `mainloop` and `quit` to prevent the test from blocking or exiting unexpectedly.
+* We mock the `FileController` used by the View during init to avoid needing the real service/filesystem, focusing only on UI component creation.
+* **Crucially, this smoke test only verifies that the `FileManagerView` class can be instantiated without immediate errors and that key widget attributes are created. It does *not* test if the widgets are laid out correctly, if they are visually accurate, or if they respond correctly to user interactions (like button clicks or text input). Verifying actual GUI behavior typically requires more advanced tools or techniques (like dedicated GUI testing frameworks or visual regression testing), which are beyond the scope of this introductory tutorial.**
 
-GUI testing is complex. This smoke test is basic.
-It requires a display environment (like your desktop). On headless CI servers, you might need xvfb (X Virtual Framebuffer).
-We skip the test if Tkinter fails to initialize (e.g., no display).
-We monkeypatch mainloop and quit to prevent the test from blocking or exiting unexpectedly.
-We mock the FileController used by the View during init to avoid needing the real service/filesystem, focusing only on UI component creation.
 ### 7.4 Running the Tests
 Open Terminal: Navigate to your project root (FileManagerProject).
 Activate Environment: source venv/bin/activate
