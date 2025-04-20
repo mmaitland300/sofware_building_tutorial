@@ -1,6 +1,6 @@
 # Building a Graphical File Manager in Python
 
-Welcome! In this guide, you’ll build a desktop application from scratch using Python and its built-in Tkinter library. This application will allow you to create, view, edit, and delete text files. We'll cover foundational concepts, provide practical code examples, explain how software interacts with the operating system (using Linux Mint as our example environment), and introduce professional software development practices like code structure (MVC) and testing.
+Welcome to your building software from scratch advanced guide! In this guide, you’ll build a desktop application from scratch using Python and its built-in Tkinter library. This application will allow you to create, view, edit, and delete text files. We'll cover foundational concepts, provide practical code examples, explain how software interacts with the operating system (using Linux Mint as our example environment), and introduce professional software development practices like code structure (MVC) and testing.
 
 ---
 
