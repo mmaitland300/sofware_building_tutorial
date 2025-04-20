@@ -83,15 +83,15 @@ A clean project structure and an isolated environment are crucial.
     ```bash
     python3 -m venv venv
     ```
-    This creates a `venv` subfolder containing a project-specific Python interpreter and library space.
-    * **Why?** Virtual environments isolate project dependencies. Packages installed here won't interfere with other projects or the system's Python installation. They work by modifying the Python interpreter's search path for modules. Note: They *don't* isolate system-level dependencies (like C libraries). For that level of isolation, tools like Docker are used, but that's beyond our scope here.
-4.  **Activate Virtual Environment:** In the *same* terminal:
+    This creates a `venv` subfolder containing a project-specific Python interpreter and library space.  
+4. **Why?** Virtual environments isolate project dependencies. Packages installed here won't interfere with other projects or the system's Python installation. They work by modifying the Python interpreter's search path for modules. Note: They *don't* isolate system-level dependencies (like C libraries). For that level of isolation, tools like Docker are used, but that's beyond our scope here.
+5.  **Activate Virtual Environment:** In the *same* terminal:
     ```bash
     source venv/bin/activate
     ```
     Your terminal prompt should change, usually showing `(venv)` at the beginning. You need to activate the environment *each time* you work on this project in a new terminal session.
-5.  **Set VS Code Interpreter:** Press `Ctrl+Shift+P`, type `Python: Select Interpreter`, and choose the one that includes `(.venv)` or points to `./venv/bin/python`. This tells VS Code to use the project's isolated environment for running and debugging code.
-6.  **(Recommended) Create `.gitignore`:** If you plan to use Git version control, create a file named `.gitignore` in the project root (`FileManagerProject/`) with the following content:
+6.  **Set VS Code Interpreter:** Press `Ctrl+Shift+P`, type `Python: Select Interpreter`, and choose the one that includes `(.venv)` or points to `./venv/bin/python`. This tells VS Code to use the project's isolated environment for running and debugging code.
+7.  **(Recommended) Create `.gitignore`:** If you plan to use Git version control, create a file named `.gitignore` in the project root (`FileManagerProject/`) with the following content:
     ```
     venv/
     __pycache__/
@@ -381,10 +381,12 @@ A common solution is the Model-View-Controller (MVC) architectural pattern (or v
 
 Model: Manages the application's data and business logic. In our case, this means all interactions with the file system (creating, reading, writing, deleting, listing files). It knows nothing about the user interface. (file_service.py)
 View: Responsible for presenting data to the user and capturing user input. It's the GUI layer (our FileManagerView class). It knows nothing about how files are actually stored or manipulated. It only knows how to display information and trigger actions. (view.py)
+
 Controller: Acts as the intermediary between the Model and the View. It takes user input from the View (e.g., "Save button clicked"), tells the Model what to do (e.g., "Save this content to this file"), gets the result from the Model, and updates the View accordingly (e.g., "Show success message" or "Display error"). (controller.py)
 Benefits of MVC:
 
 Separation of Concerns: Each layer has a specific responsibility, making the code easier to understand and modify.
+
 Testability: We can test the Model's file logic independently of the GUI. We can test the Controller's logic by simulating View events and checking interactions with a mock Model.
 Maintainability: Changes to the UI (View) are less likely to break the file handling logic (Model), and vice versa.
 Let's implement the Model and Controller layers.
@@ -1061,34 +1063,45 @@ if __name__ == '__main__':
          app_view.run()
 ```
 
-Key Changes in view.py:
+## Key Changes in `view.py`
 
-Imports: Added pathlib, threading, queue, messagebox, filedialog, and imported FileController, FileOperationError.
-__init__:
-Defines PROJECT_ROOT.
-Instantiates FileController, handling potential initialization errors.
-Initializes state variables (_current_filename, _is_modified, _load_queue).
-Binds <<Modified>> event and window closing (WM_DELETE_WINDOW).
-setup_ui:
-Buttons now have their command option set to the corresponding _on_... callback methods (e.g., command=self._on_create).
-Bound <Return> key in filename entry to trigger save.
-Callback Methods (_on_create, _on_open, _on_save, _on_delete):
-These methods now contain the logic triggered by button clicks.
-They get input from UI widgets (e.g., self.filename_entry.get(), self.text_area.get()).
-They delegate the core file operation to self.controller.
-They wrap the controller call in try...except FileOperationError to catch errors from the Model/Controller layer.
-They use messagebox to show success or error messages to the user.
-They update the UI state after successful operations (e.g., clearing the text area, updating the filename).
-Asynchronous Loading (_on_open, _perform_load_in_background, _check_load_queue):
-_on_open uses filedialog and starts a background thread (threading.Thread) to call _perform_load_in_background.
-_perform_load_in_background runs in the separate thread, calls controller.read_file, and puts the result or error into self._load_queue. Crucially, it does not touch Tkinter widgets.
-_check_load_queue runs periodically in the main Tkinter thread (scheduled by root.after), checks the queue, and updates the UI (self.text_area, self.filename_entry) based on the result.
-State Management (_update_ui_after_load, _on_text_modified, _set_modified, _confirm_discard_changes, _on_exit):
-Helper methods manage the _current_filename and _is_modified state.
-_set_modified updates the window title with a * to indicate unsaved changes.
-_confirm_discard_changes prompts the user if they try to perform an action (like Open, Exit) that would discard unsaved work.
-_on_exit uses _confirm_discard_changes before quitting.
-Now you have a functional application with Create, Open (async), Save, and Delete, built using the MVC pattern! Run python view.py to try it out. Create, save, open, edit, and delete .txt files within the FileManagerProject directory. Notice how the UI stays responsive even if you try to open a larger text file.
+- **Imports:**  
+  - Added modules: `pathlib`, `threading`, `queue`, `messagebox`, `filedialog`  
+  - Imported classes: `FileController`, `FileOperationError`  
+
+- **`__init__`:**  
+  - Defines `PROJECT_ROOT`  
+  - Instantiates `FileController`, handling initialization errors  
+  - Initializes state variables: `_current_filename`, `_is_modified`, `_load_queue`  
+  - Binds the `<<Modified>>` event on the text widget  
+  - Handles window close via `WM_DELETE_WINDOW`  
+
+- **`setup_ui`:**  
+  - Buttons now call their `_on_…` callbacks (e.g. `command=self._on_create`)  
+  - Binds `<Return>` in the filename entry to trigger save  
+
+- **Callback Methods** (`_on_create`, `_on_open`, `_on_save`, `_on_delete`):  
+  - Retrieve input from widgets (e.g. `self.filename_entry.get()`, `self.text_area.get()`)  
+  - Delegate file operations to `self.controller`  
+  - Wrap calls in `try…except FileOperationError` to catch Model/Controller errors  
+  - Display results via `messagebox`  
+  - Update UI state on success (clear text area, refresh filename entry)  
+
+- **Asynchronous Loading** (`_on_open`, `_perform_load_in_background`, `_check_load_queue`):  
+  1. `_on_open` opens a file dialog and starts a background `threading.Thread` for `_perform_load_in_background`.  
+  2. `_perform_load_in_background` runs off the main thread, calls `controller.read_file`, and enqueues success or error (never touches Tkinter widgets).  
+  3. `_check_load_queue` is scheduled with `root.after()`, polls `self._load_queue` on the main thread, and updates the UI accordingly.  
+
+- **State Management** (`_update_ui_after_load`, `_on_text_modified`, `_set_modified`, `_confirm_discard_changes`, `_on_exit`):  
+  - Manage `_current_filename` and `_is_modified` flags  
+  - `_set_modified` toggles the window title (adds `*` when unsaved)  
+  - `_confirm_discard_changes` prompts to save/discard/cancel on unsaved edits before actions  
+  - `_on_exit` invokes `_confirm_discard_changes` before quitting  
+
+---
+
+Now you have a fully functional MVC‑based file manager with **Create**, **Open** (async), **Save**, and **Delete**.  
+Run `python view.py` to try it out: create, save, open, edit, and delete `.txt` files in your `FileManagerProject` directory—and watch the UI stay responsive even with large files!
 
 ### 6.2 Adding More Features (Directory Browser, Rename, Menus)
 Let's enhance the application further.
